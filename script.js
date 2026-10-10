@@ -612,7 +612,6 @@ function renderProjects(lang) {
             <div class="proj-icon">${p.icon}</div>
             <span class="proj-category ${catClass}">${p.stars}</span>
           </div>
-          <a class="proj-link-btn" href="${p.url}" target="_blank"><span>GitHub</span> <span class="link-arrow">↗</span></a>
         </div>
         <div class="proj-title">${p.name}</div>
         <div class="proj-desc">${p.desc}</div>

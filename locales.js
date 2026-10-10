@@ -1015,7 +1015,7 @@ const aiKBByLang = {
     vi: {
         skills: "Nguyễn Đình Bách (BackDEV) có chuyên môn sâu về: **React 18/19, TypeScript, Java & Spring Boot, Node.js, Three.js (SCADA 3D), Kiến trúc Microservices, gRPC / Protobuf, Socket.IO, MSSQL, Redis**, Docker, Keycloak (IAM / RBAC), MinIO (S3 Storage), Ant Design, Tailwind CSS, và các thư viện trực quan hóa dữ liệu (Highcharts 3D, Konva, ECharts).",
         projects: "Các dự án tiêu biểu của anh Bách bao gồm:\n1. **Fujikin OEE & SCADA 3D** (Nhà máy Fujikin Thăng Long - MES/OEE real-time, Gantt, 3D SCADA)\n2. **Meiko Work Instructions & Approvals** (Backend Java & Spring Boot, bảo mật Spring Security & quy trình phê duyệt RBAC)\n3. **Smart WMS** (Quản lý kho bãi thông minh)\n4. **Gunze Weave IoT Gateway** (Backend Node.js & gRPC kết nối máy dệt)",
-        experience: "Anh Bách là kỹ sư Full Stack Developer có hơn 2 năm kinh nghiệm thực chiến, chuyên trách kiến trúc hệ thống số hóa nhà máy thông minh (MES/OEE/SCADA), xử lý telemetry dữ liệu thời gian thực và mô phỏng 3D WebGL.",
+        experience: "Anh Bách là kỹ sư Full Stack Developer có hơn 1 năm kinh nghiệm thực chiến, chuyên trách kiến trúc hệ thống số hóa nhà máy thông minh (MES/OEE/SCADA), xử lý telemetry dữ liệu thời gian thực và mô phỏng 3D WebGL.",
         available: "Anh Bách sẵn sàng trao đổi về các dự án chuyển đổi số công nghiệp, kiến trúc Microservices & giải pháp Smart Factory. Liên hệ trực tiếp qua Email: nguyendinhbach99@gmail.com.",
         contact: "📧 Email: nguyendinhbach99@gmail.com · ⚡ GitHub: github.com/BackSoftDEV",
         scada: "Về SCADA 3D: Anh Bách ứng dụng Three.js/WebGL kết hợp WebSocket và IndexedDB cache mô hình để mô phỏng không gian nhà xưởng thời gian thực mượt mà trực tiếp trên trình duyệt.",
@@ -1026,7 +1026,7 @@ const aiKBByLang = {
     en: {
         skills: "Nguyễn Đình Bách (BackDEV) is proficient in: **React 18/19, TypeScript, Java & Spring Boot, Node.js, Three.js (SCADA 3D), Microservices Architecture, gRPC / Protobuf, Socket.IO, MSSQL, Redis**, Docker, Keycloak (IAM / RBAC), MinIO (S3 Storage), Ant Design, Tailwind CSS, and visualization libraries (Highcharts 3D, Konva, ECharts).",
         projects: "Key featured projects include:\n1. **Fujikin OEE & SCADA 3D** (Fujikin Thang Long - Real-time MES/OEE, Gantt scheduling, 3D SCADA)\n2. **Meiko Work Instructions & Approvals** (Java & Spring Boot backend, Spring Security & RBAC workflow)\n3. **Smart WMS** (Intelligent warehouse management)\n4. **Gunze Weave IoT Gateway** (Node.js & gRPC weaving machine telemetry)",
-        experience: "Bách is a Full Stack Developer with 2+ years of hands-on experience, specializing in smart factory digitalization (MES/OEE/SCADA), real-time telemetry, and 3D WebGL simulations.",
+        experience: "Bách is a Full Stack Developer with 1+ years of hands-on experience, specializing in smart factory digitalization (MES/OEE/SCADA), real-time telemetry, and 3D WebGL simulations.",
         available: "Bách is open to discussing smart factory digitalization projects, microservices architecture, and technical collaborations. Reach him at: nguyendinhbach99@gmail.com.",
         contact: "📧 Email: nguyendinhbach99@gmail.com · ⚡ GitHub: github.com/BackSoftDEV",
         scada: "SCADA 3D expertise: Utilizing Three.js/WebGL combined with WebSockets and IndexedDB client caching to deliver fluid, real-time 3D workshop simulations directly in web browsers.",
@@ -1037,7 +1037,7 @@ const aiKBByLang = {
     ja: {
         skills: "Nguyễn Đình Bách (BackDEV) は以下の技術に精通しています：**React 18/19、TypeScript、Java & Spring Boot、Node.js、Three.js (SCADA 3D)、マイクロサービス設計、gRPC / Protobuf、Socket.IO、MSSQL、Redis**、Docker、Keycloak (IAM / RBAC)、MinIO (S3 Storage)、Ant Design、Tailwind CSS、Highcharts 3D、Konva、ECharts。",
         projects: "代表的なプロジェクト実績：\n1. **Fujikin OEE＆SCADA 3D**（Fujikin Thang Long工場 - リアルタイムMES/OEE、ガントチャート、3D SCADA）\n2. **Meiko 作業手順書＆多段階承認**（Java & Spring Bootバックエンド、Spring Security、承認ワークフロー）\n3. **Smart WMS**（スマート倉庫管理システム）\n4. **Gunze 織機IoTゲートウェイ**（Node.js・gRPC通信制御）",
-        experience: "2年以上の実務経験を持つフルスタックエンジニアとして、スマートファクトリーDX（MES/OEE/SCADA）、リアルタイムIoTデータ処理、3D WebGLシミュレーションの開発を主導しています。",
+        experience: "1年以上の実務経験を持つフルスタックエンジニアとして、スマートファクトリーDX（MES/OEE/SCADA）、リアルタイムIoTデータ処理、3D WebGLシミュレーションの開発を主導しています。",
         available: "製造業DX、スマートファクトリー、マイクロサービス基盤に関するご相談や技術協業を歓迎いたします。お問い合わせ: nguyendinhbach99@gmail.com",
         contact: "📧 メール: nguyendinhbach99@gmail.com · ⚡ GitHub: github.com/BackSoftDEV",
         scada: "3D SCADAに関して: Three.js/WebGL、WebSocket、IndexedDBローカルキャッシュを組み合わせ、ブラウザ上で工場の稼働状態をミリ秒単位で滑らかに立体可視化します。",
@@ -1048,7 +1048,7 @@ const aiKBByLang = {
     zh: {
         skills: "阮庭百 (BackDEV) 精通技术栈包括：**React 18/19, TypeScript, Java & Spring Boot, Node.js, Three.js (3D SCADA), 微服务架构, gRPC / Protobuf, Socket.IO, MSSQL, Redis**, Docker, Keycloak (IAM / RBAC), MinIO (S3 Storage), Ant Design, Tailwind CSS 以及工业可视化库（Highcharts 3D, Konva, ECharts）。",
         projects: "核心代表项目包括：\n1. **Fujikin OEE 与 3D SCADA**（Fujikin 昇龙工厂 - 实时 MES/OEE、甘特图排程、3D 数字孪生）\n2. **Meiko 技术标准作业与多级审批**（基于 Java & Spring Boot 后端、Spring Security 与 RBAC 审批流）\n3. **Smart WMS 智能仓储**（微服务高可用仓储管理）\n4. **Gunze 纺织设备 IoT 遥测网关**（基于 Node.js 与 gRPC 实时遥测）",
-        experience: "阮庭百拥有2年以上的实战研发经验，担任全栈工程师，主导智能工厂数字化系统（MES/OEE/SCADA）、实时物联网遥测平台及 3D WebGL 仿真系统的设计与研发。",
+        experience: "阮庭百拥有1年以上的实战研发经验，担任全栈工程师，主导智能工厂数字化系统（MES/OEE/SCADA）、实时物联网遥测平台及 3D WebGL 仿真系统的设计与研发。",
         available: "欢迎就智能工厂数字化解决方案、微服务架构以及深度技术合作进行交流。电子邮箱：nguyendinhbach99@gmail.com。",
         contact: "📧 邮箱: nguyendinhbach99@gmail.com · ⚡ GitHub: github.com/BackSoftDEV",
         scada: "3D SCADA 专精：基于 Three.js/WebGL、WebSocket 与 IndexedDB 本地缓存技术，实现浏览器端轻量、流畅的百万面工厂实时数字孪生渲染。",

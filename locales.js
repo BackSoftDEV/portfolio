@@ -6,7 +6,7 @@ const i18nDict = {
         nav_projects: "Dự án",
         nav_terminal: "Terminal",
         nav_contact: "Liên hệ",
-        nav_history_btn: "⏳ Đang phát triển",
+        nav_history_btn: "Sắp ra mắt",
 
         hero_badge: "💻 &nbsp;Full Stack Developer",
 
@@ -147,7 +147,7 @@ const i18nDict = {
         nav_projects: "Projects",
         nav_terminal: "Terminal",
         nav_contact: "Contact",
-        nav_history_btn: "⏳ In Development",
+        nav_history_btn: "Coming Soon",
 
         hero_badge: "💻 &nbsp;Full Stack Developer",
 
@@ -288,7 +288,7 @@ const i18nDict = {
         nav_projects: "プロジェクト",
         nav_terminal: "ターミナル",
         nav_contact: "お問い合わせ",
-        nav_history_btn: "⏳ 開発中",
+        nav_history_btn: "近日公開",
 
         hero_badge: "💻 &nbsp;フルスタックエンジニア",
 
@@ -429,7 +429,7 @@ const i18nDict = {
         nav_projects: "项目",
         nav_terminal: "终端",
         nav_contact: "联系",
-        nav_history_btn: "⏳ 开发中",
+        nav_history_btn: "敬请期待",
 
         hero_badge: "💻 &nbsp;全栈工程师",
 

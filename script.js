@@ -579,6 +579,11 @@ function renderSkills(cat) {
                 <span class="skill-pct">${pct}%</span>
             </div>
         `;
+        chip.addEventListener('mousemove', e => {
+            const r = chip.getBoundingClientRect();
+            chip.style.setProperty('--mouse-x', `${e.clientX - r.left}px`);
+            chip.style.setProperty('--mouse-y', `${e.clientY - r.top}px`);
+        });
         sg.appendChild(chip);
     });
     requestAnimationFrame(() => {
@@ -595,16 +600,19 @@ function renderProjects(lang) {
     const pg = document.getElementById('projectsGrid');
     if (!pg) return;
     const list = (typeof projectsByLang !== 'undefined' && projectsByLang[lang]) ? projectsByLang[lang] : (typeof projectsByLang !== 'undefined' ? projectsByLang.vi : []);
+    const flagshipText = (typeof i18nDict !== 'undefined' && i18nDict[lang] && i18nDict[lang].flagship_label) ? i18nDict[lang].flagship_label : "DỰ ÁN NÒNG CỐT · MES & SCADA 3D";
     pg.innerHTML = '';
     list.forEach((p, idx) => {
         const catClass = PROJ_CATEGORY_COLORS[idx] === 'amber' ? 'amber' : '';
-        pg.innerHTML += `<div class="proj-card" onmousemove="tilt(event,this)" onmouseleave="resetTilt(this)">
+        const isFlagship = idx === 0;
+        pg.innerHTML += `<div class="proj-card${isFlagship ? ' proj-flagship' : ''}" onmousemove="tilt(event,this)" onmouseleave="resetTilt(this)">
+        ${isFlagship ? `<div class="flagship-beacon"><span class="beacon-pulse"></span><span>${flagshipText}</span></div>` : ''}
         <div class="proj-card-top">
           <div class="proj-icon-wrap">
             <div class="proj-icon">${p.icon}</div>
             <span class="proj-category ${catClass}">${p.stars}</span>
           </div>
-          <a class="proj-link-btn" href="${p.url}" target="_blank">⎋ GitHub</a>
+          <a class="proj-link-btn" href="${p.url}" target="_blank"><span>GitHub</span> <span class="link-arrow">↗</span></a>
         </div>
         <div class="proj-title">${p.name}</div>
         <div class="proj-desc">${p.desc}</div>
@@ -618,14 +626,20 @@ function renderProjects(lang) {
 }
 renderProjects(currentLang);
 
-// Tilt effect
+// Spotlight & Tilt effect
 function tilt(e, el) {
     const r = el.getBoundingClientRect();
-    const x = ((e.clientX - r.left) / r.width - 0.5) * 16;
-    const y = ((e.clientY - r.top) / r.height - 0.5) * -16;
-    el.style.transform = `perspective(900px) rotateX(${y}deg) rotateY(${x}deg) translateY(-6px)`;
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    el.style.setProperty('--mouse-x', `${x}px`);
+    el.style.setProperty('--mouse-y', `${y}px`);
+    const rotX = ((y / r.height) - 0.5) * -10;
+    const rotY = ((x / r.width) - 0.5) * 10;
+    el.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-6px)`;
 }
-function resetTilt(el) { el.style.transform = ''; }
+function resetTilt(el) { 
+    el.style.transform = ''; 
+}
 
 // ── Scroll observer ───────────────────────────────────
 const observer = new IntersectionObserver(entries => {
@@ -886,10 +900,36 @@ function changeLanguage(lang) {
 // Apply initial language from localStorage or default
 applyLanguage(currentLang);
 
-// ── Nav scroll shrink ─────────────────────────────────
+// ── Nav scroll elevation & ScrollSpy ─────────────────
+const navSections = document.querySelectorAll('section[id]');
+const navLinkItems = document.querySelectorAll('.nav-links a');
+
 window.addEventListener('scroll', () => {
-    document.querySelector('nav').style.height = window.scrollY > 60 ? '52px' : '64px';
-});
+    const nav = document.querySelector('nav');
+    if (nav) {
+        if (window.scrollY > 30) {
+            nav.classList.add('nav-scrolled');
+        } else {
+            nav.classList.remove('nav-scrolled');
+        }
+    }
+
+    // Scrollspy active section highlighting
+    const scrollPos = window.scrollY + 140;
+    navSections.forEach(section => {
+        const top = section.offsetTop;
+        const height = section.offsetHeight;
+        const id = section.getAttribute('id');
+        if (scrollPos >= top && scrollPos < top + height) {
+            navLinkItems.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${id}`) {
+                    link.classList.add('active');
+                }
+            });
+        }
+    });
+}, { passive: true });
 
 
 console.log(`

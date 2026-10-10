@@ -6,6 +6,7 @@ const i18nDict = {
         nav_projects: "Dự án",
         nav_terminal: "Terminal",
         nav_contact: "Liên hệ",
+        nav_history_btn: "⏳ Dự Án Cá Nhân Đang Phát Triển",
 
         hero_badge: "💻 &nbsp;Full Stack Developer",
 
@@ -132,6 +133,7 @@ const i18nDict = {
         footer_text:
             "Thiết kế & Phát triển bởi <span>Nguyễn Đình Bách (BackDEV)</span> · 2026",
 
+        flagship_label: "DỰ ÁN NÒNG CỐT · MES & SCADA 3D",
         toast_success: "✓ Đã gửi tin nhắn thành công!",
         toast_missing: "⚠ Vui lòng nhập đầy đủ thông tin",
         toast_invalid_email: "⚠ Địa chỉ email không hợp lệ",
@@ -145,6 +147,7 @@ const i18nDict = {
         nav_projects: "Projects",
         nav_terminal: "Terminal",
         nav_contact: "Contact",
+        nav_history_btn: "⏳ Personal Project In Development",
 
         hero_badge: "💻 &nbsp;Full Stack Developer",
 
@@ -271,6 +274,7 @@ const i18nDict = {
         footer_text:
             "Designed & Developed by <span>Nguyễn Đình Bách (BackDEV)</span> · 2026",
 
+        flagship_label: "FLAGSHIP ARCHITECTURE · MES & SCADA 3D",
         toast_success: "✓ Message sent successfully!",
         toast_missing: "⚠ Please fill in all required fields",
         toast_invalid_email: "⚠ Invalid email address",
@@ -284,6 +288,7 @@ const i18nDict = {
         nav_projects: "プロジェクト",
         nav_terminal: "ターミナル",
         nav_contact: "お問い合わせ",
+        nav_history_btn: "⏳ 開発中の個人プロジェクト",
 
         hero_badge: "💻 &nbsp;フルスタックエンジニア",
 
@@ -410,6 +415,7 @@ const i18nDict = {
         footer_text:
             "Designed & Developed by <span>Nguyễn Đình Bách (BackDEV)</span> · 2026",
 
+        flagship_label: "主力アーキテクチャ · MES ＆ 3D SCADA",
         toast_success: "✓ メッセージが送信されました！",
         toast_missing: "⚠ 必須項目をすべて入力してください",
         toast_invalid_email: "⚠ 有効なメールアドレスを入力してください",
@@ -423,6 +429,7 @@ const i18nDict = {
         nav_projects: "项目",
         nav_terminal: "终端",
         nav_contact: "联系",
+        nav_history_btn: "⏳ 个人项目开发中",
 
         hero_badge: "💻 &nbsp;全栈工程师",
 
@@ -549,6 +556,7 @@ const i18nDict = {
         footer_text:
             "Designed & Developed by <span>Nguyễn Đình Bách (BackDEV)</span> · 2026",
 
+        flagship_label: "核心旗舰架构 · MES 与 3D SCADA",
         toast_success: "✓ 信息发送成功！",
         toast_missing: "⚠ 请填写所有必填项",
         toast_invalid_email: "⚠ 请输入有效的邮箱地址",

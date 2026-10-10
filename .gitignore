@@ -1,0 +1,10 @@
+# Dependencies
+node_modules/
+
+# AI Agent Skills & Local Tooling
+.agent/
+.agents/
+
+# OS Files
+.DS_Store
+Thumbs.db

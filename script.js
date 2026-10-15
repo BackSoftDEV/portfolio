@@ -52,9 +52,15 @@ function toggleTheme() {
 applyTheme(dark);
 
 // ── Mobile menu ──────────────────────────────────────
-document.getElementById('burgerBtn').onclick = () => document.getElementById('mobileMenu').classList.add('open');
+document.getElementById('burgerBtn').onclick = () => {
+    document.getElementById('mobileMenu').classList.add('open');
+    document.body.style.overflow = 'hidden';
+};
 document.getElementById('mobileClose').onclick = () => closeMobile();
-function closeMobile() { document.getElementById('mobileMenu').classList.remove('open'); }
+function closeMobile() {
+    document.getElementById('mobileMenu').classList.remove('open');
+    document.body.style.overflow = '';
+}
 
 // ── Toast ─────────────────────────────────────────────
 let toastTimer = null;

@@ -39,7 +39,9 @@ function applyTheme(isDark) {
     document.body.classList.toggle('light', !dark);
     const toggleBtn = document.getElementById('theme-toggle');
     if (toggleBtn) {
-        toggleBtn.textContent = dark ? '☀ Light' : '🌙 Dark';
+        toggleBtn.innerHTML = dark 
+            ? '<span class="theme-icon">☀</span><span class="theme-text"> Light</span>' 
+            : '<span class="theme-icon">🌙</span><span class="theme-text"> Dark</span>';
     }
     localStorage.setItem('portfolio_theme', dark ? 'dark' : 'light');
 }
@@ -58,9 +60,13 @@ document.getElementById('burgerBtn').onclick = () => {
 };
 document.getElementById('mobileClose').onclick = () => closeMobile();
 function closeMobile() {
-    document.getElementById('mobileMenu').classList.remove('open');
+    const mm = document.getElementById('mobileMenu');
+    if (mm) mm.classList.remove('open');
     document.body.style.overflow = '';
 }
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeMobile();
+});
 
 // ── Toast ─────────────────────────────────────────────
 let toastTimer = null;

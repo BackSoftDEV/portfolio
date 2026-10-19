@@ -20,7 +20,8 @@ const counter = setInterval(() => {
 // ── Cursor ───────────────────────────────────────────
 const cur = document.getElementById('cursor');
 const ring = document.getElementById('cursor-ring');
-let mx = 0, my = 0, rx = 0, ry = 0;
+let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+let rx = mx, ry = my;
 document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
 function animCursor() {
     cur.style.left = mx + 'px'; cur.style.top = my + 'px';
@@ -81,65 +82,104 @@ function showToast(msg, type = 'success') {
     }, 3500);
 }
 
-// ── Starfield ───────────────────────────────────────────
+// ── Interactive Particle Mesh Background (Matching history.html) ──
 (function () {
-    const canvas = document.getElementById('star-canvas');
-    const scene = new THREE.Scene();
-    const cam = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 2000);
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false });
-    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-    cam.position.z = 800;
+    const canvas = document.getElementById('ambient-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let w, h;
+    let particles = [];
+    const PARTICLE_COUNT = window.innerWidth < 768 ? 26 : 50;
+    const CONNECT_DIST = 120;
 
-    const count = window.innerWidth < 768 ? 800 : 1500;
-    const geom = new THREE.BufferGeometry();
-    const pos = new Float32Array(count * 3);
-    const cols = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-        pos[i * 3] = (Math.random() - 0.5) * 3000;
-        pos[i * 3 + 1] = (Math.random() - 0.5) * 3000;
-        pos[i * 3 + 2] = (Math.random() - 0.5) * 3000;
-        const c = Math.random();
-        if (c < 0.4) { cols[i * 3] = 0; cols[i * 3 + 1] = 0.94; cols[i * 3 + 2] = 1; }
-        else if (c < 0.7) { cols[i * 3] = 0.15; cols[i * 3 + 1] = 0.39; cols[i * 3 + 2] = 0.92; }
-        else if (c < 0.85) { cols[i * 3] = 0.96; cols[i * 3 + 1] = 0.62; cols[i * 3 + 2] = 0.04; }
-        else { cols[i * 3] = 0.88; cols[i * 3 + 1] = 0.91; cols[i * 3 + 2] = 0.94; }
+    function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
     }
-    geom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    geom.setAttribute('color', new THREE.BufferAttribute(cols, 3));
-    const mat = new THREE.PointsMaterial({ size: 1.6, vertexColors: true, transparent: true, opacity: .8, sizeAttenuation: true });
-    const stars = new THREE.Points(geom, mat);
-    scene.add(stars);
+    window.addEventListener('resize', resize);
+    resize();
 
-    let mouseX = 0, mouseY = 0;
-    window.addEventListener('mousemove', e => {
-        mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-        mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-    });
+    class Particle {
+        constructor() {
+            this.reset(true);
+        }
+        reset(initial = false) {
+            this.x = Math.random() * w;
+            this.y = initial ? Math.random() * h : (Math.random() > 0.5 ? 0 : h);
+            this.vx = (Math.random() - 0.5) * 0.55;
+            this.vy = (Math.random() - 0.5) * 0.55;
+            this.radius = Math.random() * 1.6 + 0.8;
+            this.baseAlpha = Math.random() * 0.45 + 0.25;
+            this.alpha = this.baseAlpha;
+        }
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
 
-    let heroVisible = true;
-    const heroObs = new IntersectionObserver(entries => {
-        heroVisible = entries[0].isIntersecting;
-    }, { threshold: 0 });
-    heroObs.observe(document.getElementById('hero'));
+            if (this.x < 0 || this.x > w) this.vx = -this.vx;
+            if (this.y < 0 || this.y > h) this.vy = -this.vy;
 
-    function animate() {
-        requestAnimationFrame(animate);
-        if (!heroVisible) return;
-        stars.rotation.y += 0.0002;
-        stars.rotation.x += 0.00007;
-        cam.position.x += (mouseX * 28 - cam.position.x) * 0.03;
-        cam.position.y += (-mouseY * 28 - cam.position.y) * 0.03;
-        cam.lookAt(scene.position);
-        renderer.render(scene, cam);
+            // Mouse proximity reaction
+            const dx = mx - this.x;
+            const dy = my - this.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 130) {
+                const force = (130 - dist) / 130;
+                this.x -= (dx / dist) * force * 1.5;
+                this.y -= (dy / dist) * force * 1.5;
+                this.alpha = Math.min(0.9, this.baseAlpha + 0.35);
+            } else {
+                this.alpha = this.baseAlpha;
+            }
+        }
+        draw() {
+            const isLight = document.body.classList.contains('light');
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = isLight ? `rgba(2, 132, 199, ${this.alpha})` : `rgba(0, 245, 255, ${this.alpha})`;
+            ctx.shadowBlur = isLight ? 4 : 8;
+            ctx.shadowColor = isLight ? 'rgba(2, 132, 199, 0.3)' : 'rgba(0, 245, 255, 0.4)';
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
     }
-    animate();
 
-    window.addEventListener('resize', () => {
-        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-        cam.aspect = canvas.clientWidth / canvas.clientHeight;
-        cam.updateProjectionMatrix();
-    });
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push(new Particle());
+    }
+
+    function drawMesh() {
+        ctx.clearRect(0, 0, w, h);
+        const isLight = document.body.classList.contains('light');
+
+        // Draw connections
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < CONNECT_DIST) {
+                    const lineAlpha = (1 - dist / CONNECT_DIST) * (isLight ? 0.12 : 0.16);
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.strokeStyle = isLight ? `rgba(2, 132, 199, ${lineAlpha})` : `rgba(56, 189, 248, ${lineAlpha})`;
+                    ctx.lineWidth = 0.8;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // Draw particles
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+        });
+
+        requestAnimationFrame(drawMesh);
+    }
+    drawMesh();
 })();
 
 // ── About SCADA 3D Tech Core (Multi-Module Showcase) ──

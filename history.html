@@ -1050,7 +1050,7 @@
   </style>
 </head>
 
-<body data-theme-mode="monochrome">
+<body class="is-prismatic" data-theme-mode="prismatic">
 
   <!-- Custom Cyber Cursor -->
   <div id="cursor"></div>
@@ -1086,7 +1086,7 @@
     <!-- Main Stage Bento Card -->
     <div class="stage-wrapper is-blurring" id="stage">
       <div class="card-tilt-rig" id="cardRig">
-        <div class="coming-card" id="card" data-backlight-mode="monochrome">
+        <div class="coming-card is-prismatic" id="card" data-backlight-mode="prismatic">
           <div class="card-spotlight" id="spotlight"></div>
 
           <!-- Corner Sci-Fi Tech Brackets -->
@@ -1238,8 +1238,8 @@
       let lastSpotKey = '';
       let lastCursorKey = '';
 
-      let prismaticMode = false;
-      let themeMix = 0;
+      let prismaticMode = true;
+      let themeMix = 1;
       let burstTimer = 0;
       let burstPeak = 1.0;
 

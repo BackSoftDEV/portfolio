@@ -15,6 +15,7 @@
   <style>
     :root {
       --bg: #070b14;
+      --bg-mono: #050608;
       --bg2: #0c1322;
       --card: rgba(12, 19, 34, 0.75);
       --border: rgba(56, 189, 248, 0.2);
@@ -61,64 +62,145 @@
       min-height: 100vh;
       min-height: 100dvh;
       overflow: hidden;
-      background: var(--bg);
+      background: var(--bg-mono);
       color: var(--text);
       font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Cyber Background & Ambient Bloom */
+    body {
+      transition: background-color 700ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body.is-prismatic {
+      background: var(--bg);
+    }
+
+    /* Cyber Background & Legacy Ambient Bloom (Monochrome <-> Prismatic Sync) */
     .viewport-container {
       position: relative;
       width: 100%;
       height: 100%;
       min-height: 100vh;
       min-height: 100dvh;
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 1.5rem;
+      background-color: var(--bg-mono);
+      background-image:
+        radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.055) 0%, transparent 60%),
+        radial-gradient(circle at 15% 15%, rgba(226, 232, 240, 0.045) 0%, transparent 45%),
+        radial-gradient(circle at 85% 85%, rgba(203, 213, 225, 0.03) 0%, transparent 40%);
+      transition: background-color 700ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .viewport-container::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
       background-image:
         radial-gradient(circle at 50% 45%, rgba(0, 245, 255, 0.09) 0%, transparent 60%),
         radial-gradient(circle at 15% 15%, rgba(59, 130, 246, 0.08) 0%, transparent 45%),
         radial-gradient(circle at 85% 85%, rgba(245, 158, 11, 0.05) 0%, transparent 40%);
+      opacity: 0;
+      transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Interactive Particle Grid Canvas */
-    #ambient-canvas {
+    body.is-prismatic .viewport-container {
+      background-color: var(--bg);
+    }
+
+    body.is-prismatic .viewport-container::after {
+      opacity: 1;
+    }
+
+    /* Legacy Subtle Cyber Tech Grid (48x48px, Monochrome <-> Prismatic Sync) */
+    .grid-backdrop {
       position: absolute;
       inset: 0;
-      width: 100%;
-      height: 100%;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.032) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.032) 1px, transparent 1px);
+      background-size: 48px 48px;
       pointer-events: none;
       z-index: 1;
+      -webkit-mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 85%);
+      mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 85%);
     }
 
-    /* Subtle Scanline Overlay */
-    .scanline-overlay {
-      position: absolute;
-      inset: 0;
-      background: repeating-linear-gradient(0deg,
-          transparent,
-          transparent 2px,
-          rgba(0, 245, 255, 0.018) 2px,
-          rgba(0, 245, 255, 0.018) 4px);
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    /* Subtle Cyber Tech Grid */
-    .grid-backdrop {
+    .grid-backdrop::after {
+      content: '';
       position: absolute;
       inset: 0;
       background-image:
         linear-gradient(rgba(56, 189, 248, 0.035) 1px, transparent 1px),
         linear-gradient(90deg, rgba(56, 189, 248, 0.035) 1px, transparent 1px);
       background-size: 48px 48px;
+      opacity: 0;
+      transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1);
       pointer-events: none;
-      z-index: 1;
-      mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 85%);
-      -webkit-mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 85%);
+    }
+
+    body.is-prismatic .grid-backdrop::after {
+      opacity: 1;
+    }
+
+    /* Legacy Interactive Particle Mesh Canvas (Optimized, Single rAF Loop) */
+    #particle-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 900ms ease-out;
+    }
+
+    #particle-canvas.is-ready {
+      opacity: 1;
+    }
+
+    /* Legacy Subtle Scanline Overlay */
+    .scanline-overlay {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(0deg,
+          transparent,
+          transparent 2px,
+          rgba(255, 255, 255, 0.013) 2px,
+          rgba(255, 255, 255, 0.013) 4px);
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    body.is-prismatic .scanline-overlay {
+      background: repeating-linear-gradient(0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 245, 255, 0.018) 2px,
+          rgba(0, 245, 255, 0.018) 4px);
+    }
+
+    /* WebGL Optical Card Backlight Layer (Transparent Over Legacy Particle/Grid Background) */
+    /* ARCHIVED NOTE: Previously rendered unified Micro-LED Light Field + Backlight at z-index: 1 */
+    #ambient-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 4;
+      opacity: 0;
+      transition: opacity 900ms ease-out;
+    }
+
+    #ambient-canvas.is-ready {
+      opacity: 1;
     }
 
     /* ── HUD Telemetry Frames (Corners & Edges) ────────── */
@@ -128,12 +210,17 @@
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.72rem;
       letter-spacing: 0.1em;
-      color: rgba(148, 163, 184, 0.65);
+      color: rgba(186, 192, 202, 0.58);
       user-select: none;
       pointer-events: auto;
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      transition: color 700ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body.is-prismatic .hud-edge {
+      color: rgba(148, 163, 184, 0.65);
     }
 
     .hud-tl {
@@ -160,9 +247,15 @@
       width: 7px;
       height: 7px;
       border-radius: 50%;
+      background: #e2e8f0;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.75);
+      animation: pulseNeon 2s infinite ease-in-out;
+      transition: background-color 700ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 700ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body.is-prismatic .hud-dot {
       background: var(--neon);
       box-shadow: 0 0 10px var(--neon);
-      animation: pulseNeon 2s infinite ease-in-out;
     }
 
     @keyframes pulseNeon {
@@ -180,8 +273,13 @@
     }
 
     .hud-live-tag {
-      color: var(--neon);
+      color: #f8fafc;
       font-weight: 600;
+      transition: color 700ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body.is-prismatic .hud-live-tag {
+      color: var(--neon);
     }
 
     /* ── Center Stage & Perspective Wrapper ───────────── */
@@ -193,52 +291,102 @@
       width: 100%;
     }
 
-    /* ── Main Bento Glass Card ────────────────────────── */
-    .coming-card {
+    /* ── 3D Tilt Rig (Synced With Shader Homography) ──── */
+    .card-tilt-rig {
       position: relative;
       width: 100%;
-      background: var(--card);
-      border: 1px solid var(--border);
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+
+    /* ── Main Bento Obsidian Card (Opaque + Matte Grain) ─ */
+    .coming-card {
+      position: relative;
+      z-index: 2;
+      isolation: isolate;
+      overflow: hidden;
+      width: 100%;
+      background: #06070a;
+      border: 1px solid rgba(255, 255, 255, 0.09);
       border-radius: 32px;
       padding: 4.5rem 3rem 4rem;
-      backdrop-filter: blur(28px) saturate(180%);
-      -webkit-backdrop-filter: blur(28px) saturate(180%);
       box-shadow:
-        0 30px 80px -20px rgba(0, 0, 0, 0.8),
-        0 0 0 1px rgba(255, 255, 255, 0.05),
-        inset 0 1px 0 rgba(255, 255, 255, 0.14);
+        0 24px 64px -20px rgba(0, 0, 0, 0.85),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
       gap: 2.2rem;
-      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
-      transform-style: preserve-3d;
-      animation: entranceCard 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+      transition:
+        background-color 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.7s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    @keyframes entranceCard {
-      from {
-        opacity: 0;
-        transform: translateY(40px) scale(0.94);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    /* Interactive Spotlight Layer */
-    .card-spotlight {
+    .coming-card::before {
+      content: '';
       position: absolute;
       inset: 0;
-      border-radius: 32px;
+      border-radius: inherit;
       pointer-events: none;
-      background: radial-gradient(500px circle at var(--spot-x, 50%) var(--spot-y, 50%),
-          rgba(0, 245, 255, 0.08),
-          transparent 60%);
-      transition: opacity 0.3s;
+      z-index: -2;
+      opacity: 0.036;
+      background-image: var(--card-grain-url, none);
+      background-size: 128px 128px;
+      background-repeat: repeat;
+    }
+
+    .coming-card.is-prismatic {
+      background: #060910;
+      border-color: rgba(255, 255, 255, 0.16);
+      box-shadow:
+        0 24px 64px -20px rgba(0, 0, 0, 0.85),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    /* Interactive Spotlight Layer (Compositor translate3d Only) */
+    .card-spotlight {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 560px;
+      height: 560px;
+      margin-left: -280px;
+      margin-top: -280px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0;
+      transform: translate3d(340px, 210px, 0);
+      background: radial-gradient(circle at center,
+          rgba(255, 255, 255, 0.048) 0%,
+          rgba(255, 255, 255, 0.015) 38%,
+          transparent 66%);
+      transition: opacity 0.35s ease;
+      will-change: transform;
+    }
+
+    .card-spotlight.is-visible {
+      opacity: 1;
+    }
+
+    .card-spotlight::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(circle at center,
+          rgba(0, 245, 255, 0.08) 0%,
+          rgba(59, 130, 246, 0.025) 40%,
+          transparent 68%);
+      opacity: 0;
+      transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+
+    .coming-card.is-prismatic .card-spotlight::after {
+      opacity: 1;
     }
 
     /* Sci-Fi HUD Corner Brackets */
@@ -247,7 +395,12 @@
       width: 14px;
       height: 14px;
       pointer-events: none;
-      border-color: rgba(0, 245, 255, 0.45);
+      border-color: rgba(255, 255, 255, 0.28);
+      transition: border-color 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .coming-card.is-prismatic .corner-bracket {
+      border-color: rgba(0, 245, 255, 0.72);
     }
 
     .corner-bracket.tl {
@@ -283,17 +436,35 @@
       display: inline-flex;
       align-items: center;
       gap: 0.65rem;
-      background: rgba(0, 245, 255, 0.06);
-      border: 1px solid rgba(0, 245, 255, 0.28);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.22);
       border-radius: 999px;
       padding: 0.42rem 1.25rem;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.74rem;
       font-weight: 600;
       letter-spacing: 0.12em;
+      color: #f1f5f9;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
+      transition:
+        opacity 200ms ease-out,
+        filter 200ms ease-out,
+        background-color 700ms cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 700ms cubic-bezier(0.4, 0, 0.2, 1),
+        color 700ms cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 700ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body.is-prismatic .telemetry-badge {
+      background: rgba(0, 245, 255, 0.06);
+      border-color: rgba(0, 245, 255, 0.28);
       color: var(--neon);
       box-shadow: 0 0 20px rgba(0, 245, 255, 0.12);
-      transition: all 0.3s ease;
+    }
+
+    .stage-wrapper.is-blurring .telemetry-badge {
+      opacity: 0.55;
+      filter: blur(2px);
     }
 
     .badge-signal {
@@ -311,8 +482,13 @@
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      background: var(--neon);
+      background: rgba(255, 255, 255, 0.85);
       animation: pingGlow 2s infinite cubic-bezier(0, 0, 0.2, 1);
+      transition: background-color 700ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body.is-prismatic .badge-signal::before {
+      background: var(--neon);
     }
 
     .badge-signal::after {
@@ -336,6 +512,7 @@
     /* ── Master Hero Typography: COMING SOON ──────────── */
     .title-wrapper {
       position: relative;
+      isolation: isolate;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -348,26 +525,59 @@
       line-height: 0.95;
       letter-spacing: -0.03em;
       text-transform: uppercase;
-      background: linear-gradient(135deg, #ffffff 15%, #cbd5e1 45%, var(--neon) 80%, var(--neon2) 100%);
+      background: linear-gradient(135deg, #ffffff 15%, #cbd5e1 45%, #d4d8df 80%, #7e8794 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 0 32px rgba(0, 245, 255, 0.3));
       position: relative;
       white-space: nowrap;
+      transition: opacity 200ms ease-out;
     }
 
-    /* Subtle ambient reflection behind text */
+    .main-title::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #ffffff 15%, #cbd5e1 45%, #00f5ff 80%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      opacity: 0;
+      transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+
+    body.is-prismatic .main-title::after {
+      opacity: 1;
+    }
+
+    .stage-wrapper.is-blurring .main-title {
+      opacity: 0.65;
+    }
+
+    /* Subtle ambient reflection behind text (Pure Radial Gradient, Zero CSS Blur) */
     .title-glow-aura {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 85%;
-      height: 60%;
-      background: radial-gradient(ellipse at center, rgba(0, 245, 255, 0.18) 0%, transparent 70%);
-      filter: blur(25px);
+      width: 122%;
+      height: 150%;
+      background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.03) 42%, transparent 72%);
       pointer-events: none;
       z-index: -1;
+    }
+
+    .title-glow-aura::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(0, 245, 255, 0.16) 0%, rgba(59, 130, 246, 0.045) 44%, transparent 72%);
+      opacity: 0;
+      transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+
+    body.is-prismatic .title-glow-aura::after {
+      opacity: 1;
     }
 
     /* ── Cyber HUD Scanner Module (Text-Free Segmented Matrix) ── */
@@ -385,6 +595,12 @@
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.95rem;
       font-weight: 700;
+      color: rgba(255, 255, 255, 0.48);
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.32);
+      transition: color 700ms cubic-bezier(0.4, 0, 0.2, 1), text-shadow 700ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body.is-prismatic .scanner-bracket {
       color: rgba(0, 245, 255, 0.45);
       text-shadow: 0 0 8px rgba(0, 245, 255, 0.4);
     }
@@ -398,23 +614,52 @@
       flex: 1;
       height: 20px;
       padding: 3px 6px;
-      background: rgba(7, 11, 20, 0.75);
-      border: 1px solid rgba(56, 189, 248, 0.2);
+      background: rgba(8, 9, 12, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.16);
       border-radius: 6px;
-      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.7), 0 0 16px rgba(0, 245, 255, 0.08);
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.75), 0 0 16px rgba(255, 255, 255, 0.06);
       overflow: hidden;
+      transition:
+        background-color 700ms cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 700ms cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 700ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Ambient cyber laser sweep across the track */
+    body.is-prismatic .scanner-track {
+      background: rgba(7, 11, 20, 0.75);
+      border-color: rgba(56, 189, 248, 0.2);
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.7), 0 0 16px rgba(0, 245, 255, 0.08);
+    }
+
+    /* Ambient cyber laser sweep across the track (Compositor Opacity Crossfade) */
+    .scanner-track::before,
     .scanner-track::after {
       content: '';
       position: absolute;
       top: 0;
       bottom: 0;
       width: 50px;
-      background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.45), transparent);
       animation: laserSweep 2.2s ease-in-out infinite alternate;
       pointer-events: none;
+      transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .scanner-track::before {
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.34), transparent);
+      opacity: 1;
+    }
+
+    .scanner-track::after {
+      background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.45), transparent);
+      opacity: 0;
+    }
+
+    body.is-prismatic .scanner-track::before {
+      opacity: 0;
+    }
+
+    body.is-prismatic .scanner-track::after {
+      opacity: 1;
     }
 
     @keyframes laserSweep {
@@ -430,9 +675,15 @@
     .scanner-seg {
       flex: 1;
       height: 10px;
-      background: rgba(255, 255, 255, 0.08);
+      background: #e5e7eb;
       border-radius: 1.5px;
+      opacity: 0.12;
       animation: segPulse 2.4s ease-in-out infinite;
+      transition: background-color 700ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body.is-prismatic .scanner-seg {
+      background: #00f5ff;
     }
 
     .scanner-seg:nth-child(1) {
@@ -519,14 +770,12 @@
 
       0%,
       100% {
-        background: rgba(255, 255, 255, 0.08);
-        box-shadow: none;
+        opacity: 0.11;
       }
 
       30%,
       65% {
-        background: var(--neon);
-        box-shadow: 0 0 8px var(--neon);
+        opacity: 0.96;
       }
     }
 
@@ -537,8 +786,8 @@
       align-items: center;
       justify-content: center;
       gap: 0.75rem;
-      background: rgba(12, 19, 34, 0.85);
-      border: 1px solid var(--border);
+      background: rgba(14, 16, 20, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.18);
       color: var(--text);
       text-decoration: none;
       font-family: 'Space Grotesk', sans-serif;
@@ -548,18 +797,32 @@
       padding: 0.95rem 2.4rem;
       border-radius: 999px;
       overflow: hidden;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition:
+        transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+        background-color 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+        border-color 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+        color 0.55s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
       margin-top: 0.5rem;
+    }
+
+    body.is-prismatic .btn-back {
+      background: rgba(12, 19, 34, 0.85);
+      border-color: var(--border);
     }
 
     .btn-back::before {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.15), transparent);
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.16), transparent);
       transform: translateX(-100%);
       transition: transform 0.6s ease;
+    }
+
+    body.is-prismatic .btn-back::before {
+      background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.15), transparent);
     }
 
     .btn-back:hover::before {
@@ -567,60 +830,108 @@
     }
 
     .btn-back:hover {
-      background: rgba(0, 245, 255, 0.1);
-      border-color: var(--neon);
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.85);
       color: #ffffff;
       transform: translateY(-2px);
+      box-shadow: 0 0 26px rgba(255, 255, 255, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+    }
+
+    body.is-prismatic .btn-back:hover {
+      background: rgba(0, 245, 255, 0.1);
+      border-color: var(--neon);
       box-shadow: 0 0 28px rgba(0, 245, 255, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
     }
 
     .btn-arrow {
       font-size: 1.1rem;
-      transition: transform 0.25s ease;
+      transition: transform 0.25s ease, color 0.35s ease;
     }
 
     .btn-back:hover .btn-arrow {
       transform: translateX(-4px);
+      color: #ffffff;
+    }
+
+    body.is-prismatic .btn-back:hover .btn-arrow {
       color: var(--neon);
     }
 
-    /* ── Custom Cursor Matching Index ─────────────────── */
+    /* ── Custom Cursor Matching Index (GPU translate3d) ── */
     #cursor {
       position: fixed;
+      top: 0;
+      left: 0;
       width: 8px;
       height: 8px;
-      background: var(--neon);
+      margin-left: -4px;
+      margin-top: -4px;
+      background: #f8fafc;
       border-radius: 50%;
       pointer-events: none;
       z-index: 9999;
-      transform: translate(-50%, -50%);
-      transition: width 0.2s, height 0.2s, opacity 0.2s;
+      transform: translate3d(-100px, -100px, 0);
+      will-change: transform;
+      transition:
+        width 0.2s,
+        height 0.2s,
+        margin 0.2s,
+        opacity 0.2s,
+        background-color 700ms cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 700ms cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 14px rgba(255, 255, 255, 0.8);
+    }
+
+    body.is-prismatic #cursor {
+      background: var(--neon);
       box-shadow: 0 0 14px var(--neon);
     }
 
     #cursor-ring {
       position: fixed;
+      top: 0;
+      left: 0;
       width: 32px;
       height: 32px;
-      border: 1.5px solid var(--neon);
+      margin-left: -16px;
+      margin-top: -16px;
+      border: 1.5px solid rgba(255, 255, 255, 0.85);
       border-radius: 50%;
       pointer-events: none;
       z-index: 9998;
-      transform: translate(-50%, -50%);
-      transition: all 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translate3d(-100px, -100px, 0);
+      will-change: transform;
+      transition:
+        width 0.12s cubic-bezier(0.16, 1, 0.3, 1),
+        height 0.12s cubic-bezier(0.16, 1, 0.3, 1),
+        margin 0.12s cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 0.12s cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 700ms cubic-bezier(0.4, 0, 0.2, 1);
       opacity: 0.45;
+    }
+
+    body.is-prismatic #cursor-ring {
+      border-color: var(--neon);
     }
 
     body:has(a:hover, button:hover, .btn-back:hover) #cursor {
       width: 14px;
       height: 14px;
+      margin-left: -7px;
+      margin-top: -7px;
       opacity: 0.9;
     }
 
     body:has(a:hover, button:hover, .btn-back:hover) #cursor-ring {
       width: 48px;
       height: 48px;
+      margin-left: -24px;
+      margin-top: -24px;
       opacity: 0.25;
+      border-color: #ffffff;
+    }
+
+    body.is-prismatic:has(a:hover, button:hover, .btn-back:hover) #cursor-ring {
       border-color: var(--neon);
     }
 
@@ -682,20 +993,76 @@
         display: none;
       }
     }
+
+    @media (prefers-reduced-motion: reduce) {
+      body,
+      .viewport-container,
+      .viewport-container::after,
+      .grid-backdrop::after,
+      #particle-canvas,
+      #ambient-canvas,
+      .card-spotlight,
+      .card-spotlight::after,
+      .title-glow-aura::after,
+      .hud-edge,
+      .hud-dot,
+      .hud-live-tag,
+      .coming-card,
+      .corner-bracket,
+      .telemetry-badge,
+      .badge-signal::before,
+      .main-title,
+      .main-title::after,
+      .scanner-bracket,
+      .scanner-track,
+      .scanner-track::before,
+      .scanner-track::after,
+      .scanner-seg,
+      .btn-back,
+      #cursor,
+      #cursor-ring {
+        transition: none;
+      }
+
+      .card-tilt-rig,
+      .coming-card,
+      .hud-dot,
+      .badge-signal::before,
+      .scanner-track::before,
+      .scanner-track::after,
+      .scanner-seg {
+        animation: none !important;
+      }
+
+      .scanner-seg {
+        opacity: 0.35;
+      }
+
+      .stage-wrapper.is-blurring .main-title {
+        opacity: 1;
+      }
+
+      .stage-wrapper.is-blurring .telemetry-badge {
+        opacity: 1;
+        filter: none;
+      }
+    }
   </style>
 </head>
 
-<body>
+<body data-theme-mode="monochrome">
 
   <!-- Custom Cyber Cursor -->
   <div id="cursor"></div>
   <div id="cursor-ring"></div>
 
-  <!-- Ambient Interactive Canvas & Scanlines -->
+  <!-- Legacy Cyber Background (Tech Grid + Particle Mesh + Scanline) + WebGL Card Backlight -->
+  <!-- ARCHIVED BACKGROUND: Micro-LED Light Field is commented inside #ambient-canvas shader below -->
   <div class="viewport-container" id="container">
-    <canvas id="ambient-canvas"></canvas>
-    <div class="grid-backdrop"></div>
-    <div class="scanline-overlay"></div>
+    <div class="grid-backdrop" aria-hidden="true"></div>
+    <canvas id="particle-canvas" aria-hidden="true"></canvas>
+    <div class="scanline-overlay" aria-hidden="true"></div>
+    <canvas id="ambient-canvas" aria-hidden="true"></canvas>
 
     <!-- HUD Telemetry Corners -->
     <div class="hud-edge hud-tl">
@@ -717,27 +1084,28 @@
     </div>
 
     <!-- Main Stage Bento Card -->
-    <div class="stage-wrapper" id="stage">
-      <div class="coming-card" id="card">
-        <div class="card-spotlight" id="spotlight"></div>
+    <div class="stage-wrapper is-blurring" id="stage">
+      <div class="card-tilt-rig" id="cardRig">
+        <div class="coming-card" id="card" data-backlight-mode="monochrome">
+          <div class="card-spotlight" id="spotlight"></div>
 
-        <!-- Corner Sci-Fi Tech Brackets -->
-        <span class="corner-bracket tl"></span>
-        <span class="corner-bracket tr"></span>
-        <span class="corner-bracket bl"></span>
-        <span class="corner-bracket br"></span>
+          <!-- Corner Sci-Fi Tech Brackets -->
+          <span class="corner-bracket tl"></span>
+          <span class="corner-bracket tr"></span>
+          <span class="corner-bracket bl"></span>
+          <span class="corner-bracket br"></span>
 
-        <!-- Badge -->
-        <div class="telemetry-badge">
-          <span class="badge-signal"></span>
-          <span>COMING SOON</span>
-        </div>
+          <!-- Badge -->
+          <div class="telemetry-badge">
+            <span class="badge-signal"></span>
+            <span>COMING SOON</span>
+          </div>
 
-        <!-- Centerpiece Typography -->
-        <div class="title-wrapper">
-          <div class="title-glow-aura"></div>
-          <h1 class="main-title">Coming Soon</h1>
-        </div>
+          <!-- Centerpiece Typography -->
+          <div class="title-wrapper">
+            <div class="title-glow-aura"></div>
+            <h1 class="main-title" data-text="Coming Soon">Coming Soon</h1>
+          </div>
 
         <!-- Cyber HUD Scanner Bar (Pure High-Tech Segmented Matrix, No Text) -->
         <div class="cyber-scanner-module" aria-hidden="true">
@@ -772,6 +1140,7 @@
           <span class="btn-arrow">←</span>
           <span>Quay lại Portfolio</span>
         </a>
+        </div>
       </div>
     </div>
   </div>
@@ -790,155 +1159,991 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    /* ── Custom Cursor ────────────────────────────────── */
-    const cur = document.getElementById('cursor');
-    const ring = document.getElementById('cursor-ring');
-    let mx = window.innerWidth / 2, my = window.innerHeight / 2;
-    let rx = mx, ry = my;
-
-    window.addEventListener('mousemove', e => {
-      mx = e.clientX;
-      my = e.clientY;
-    });
-
-    function animCursor() {
-      if (cur && ring) {
-        cur.style.left = mx + 'px';
-        cur.style.top = my + 'px';
-        rx += (mx - rx) * 0.16;
-        ry += (my - ry) * 0.16;
-        ring.style.left = rx + 'px';
-        ring.style.top = ry + 'px';
-      }
-      requestAnimationFrame(animCursor);
-    }
-    animCursor();
-
-    /* ── 3D Card Spotlight & Tilt ─────────────────────── */
-    const card = document.getElementById('card');
-    const spotlight = document.getElementById('spotlight');
-
-    if (card && spotlight && window.matchMedia('(hover: hover)').matches) {
-      document.addEventListener('mousemove', e => {
-        const rect = card.getBoundingClientRect();
-        const cardX = e.clientX - rect.left;
-        const cardY = e.clientY - rect.top;
-
-        spotlight.style.setProperty('--spot-x', `${cardX}px`);
-        spotlight.style.setProperty('--spot-y', `${cardY}px`);
-
-        // Subtle 3D tilt
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const deltaX = (e.clientX - centerX) / (window.innerWidth / 2);
-        const deltaY = (e.clientY - centerY) / (window.innerHeight / 2);
-
-        const tiltX = -deltaY * 5;
-        const tiltY = deltaX * 7;
-
-        card.style.transform = `rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg)`;
-      });
-
-      document.addEventListener('mouseleave', () => {
-        card.style.transform = 'rotateX(0deg) rotateY(0deg)';
-      });
-    }
-
-    /* ── Interactive Particle Mesh Background ──────────── */
+    /* ── Unified Stage Engine (Legacy Particle Mesh + WebGL Optical Card Backlight) ── */
     (function () {
       const canvas = document.getElementById('ambient-canvas');
-      const ctx = canvas.getContext('2d');
-      let w, h;
-      let particles = [];
+      const particleCanvas = document.getElementById('particle-canvas');
+      const stage = document.getElementById('stage');
+      const cardRig = document.getElementById('cardRig');
+      const card = document.getElementById('card');
+      const spotlight = document.getElementById('spotlight');
+      const cur = document.getElementById('cursor');
+      const ring = document.getElementById('cursor-ring');
+      if (!canvas || !card || !cardRig) return;
+
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const coarsePointer = window.matchMedia('(pointer: coarse), (hover: none)').matches;
+      const canHover = window.matchMedia('(hover: hover)').matches && !coarsePointer;
+      const PERSPECTIVE = 1200;
+      const DEG2RAD = Math.PI / 180;
+      const TWO_PI = Math.PI * 2;
+
+      // Bake tiny static 128x128 matte film grain texture once for opaque card surface
+      (function bakeCardGrain() {
+        try {
+          const tile = document.createElement('canvas');
+          tile.width = 128;
+          tile.height = 128;
+          const tctx = tile.getContext('2d');
+          if (!tctx || typeof tctx.createImageData !== 'function') return;
+          const img = tctx.createImageData(128, 128);
+          const data = img.data;
+          let seed = 1337;
+          for (let i = 0; i < data.length; i += 4) {
+            seed = (seed * 1664525 + 1013904223) >>> 0;
+            const v = (seed >>> 24) & 255;
+            data[i] = v;
+            data[i + 1] = v;
+            data[i + 2] = v;
+            data[i + 3] = 255;
+          }
+          tctx.putImageData(img, 0, 0);
+          if (typeof tile.toDataURL === 'function') {
+            card.style.setProperty('--card-grain-url', `url(${tile.toDataURL('image/png')})`);
+          }
+        } catch (e) { }
+      })();
+
+      // Viewport & cached untransformed card geometry (zero getBoundingClientRect in pointermove)
+      let vw = window.innerWidth || 1280;
+      let vh = window.innerHeight || 720;
+      let scaleCap = 1.0;
+      let scale = 1.0;
+      /* === ARCHIVED BACKGROUND (Micro-LED Light Field): grid state ===
+      let spacing = 24;
+      let gridOffsetX = 0;
+      let gridOffsetY = 0;
+      === END ARCHIVED === */
+
+      let cardW = 680, cardH = 420, cardCX = vw * 0.5, cardCY = vh * 0.5;
+      let cardRadius = 32, bleed = 240;
+
+      // Pointer, cursor, tilt, entrance & theme state
+      let mx = vw * 0.5, my = vh * 0.5;
+      let rx = mx, ry = my;
+      let pointerActive = false, hasPointer = false;
+      /* === ARCHIVED BACKGROUND (Micro-LED Light Field): pointer halo state ===
+      let pointerStrength = 0;
+      let smoothPtrX = mx, smoothPtrY = my;
+      === END ARCHIVED === */
+
+      let targetMX = -220, targetMY = 240;
+      let smoothMX = targetMX, smoothMY = targetMY;
+
+      let targetTiltX = 0, targetTiltY = 0;
+      let curTiltX = 0, curTiltY = 0;
+      let entranceElapsed = reducedMotion ? 1.0 : 0.0;
+      const ENTRANCE_DUR = 0.9;
+      let lastTransformKey = '';
+      let lastSpotKey = '';
+      let lastCursorKey = '';
+
+      let prismaticMode = false;
+      let themeMix = 0;
+      let burstTimer = 0;
+      let burstPeak = 1.0;
+
+      // Loop, idle throttle & one-way adaptive scale governor
+      let rafId = null;
+      let lastTime = 0;
+      let lastDrawNow = 0;
+      let elapsed = 1.6;
+      let lastInputNow = 0;
+      let revealed = false;
+
+      let slowFrameCount = 0;
+      let downgradedScale = false;
+      const START_NOW = performance.now();
+      const invH = new Float32Array([1, 0, 0, 0, 1, 0, 0, 0, 1]);
+
+      // Legacy Cyber Particle Mesh (45 interactive nodes, mouse repulsion, zero shadowBlur)
+      const pCtx = particleCanvas ? particleCanvas.getContext('2d') : null;
       const PARTICLE_COUNT = 45;
       const CONNECT_DIST = 120;
+      const CONNECT_DIST_SQ = CONNECT_DIST * CONNECT_DIST;
+      const REPEL_DIST = 130;
+      const particles = [];
 
-      function resize() {
-        w = canvas.width = window.innerWidth;
-        h = canvas.height = window.innerHeight;
+      function initParticles() {
+        particles.length = 0;
+        let seed = 4207;
+        const rand = () => {
+          seed = (seed * 1664525 + 1013904223) >>> 0;
+          return seed / 4294967296;
+        };
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+          const baseAlpha = rand() * 0.45 + 0.25;
+          particles.push({
+            x: rand() * vw,
+            y: rand() * vh,
+            vx: (rand() - 0.5) * 0.55,
+            vy: (rand() - 0.5) * 0.55,
+            radius: rand() * 1.6 + 0.8,
+            baseAlpha,
+            alpha: baseAlpha
+          });
+        }
       }
-      window.addEventListener('resize', resize);
-      resize();
 
-      class Particle {
-        constructor() {
-          this.reset(true);
-        }
-        reset(initial = false) {
-          this.x = Math.random() * w;
-          this.y = initial ? Math.random() * h : (Math.random() > 0.5 ? 0 : h);
-          this.vx = (Math.random() - 0.5) * 0.55;
-          this.vy = (Math.random() - 0.5) * 0.55;
-          this.radius = Math.random() * 1.6 + 0.8;
-          this.baseAlpha = Math.random() * 0.45 + 0.25;
-          this.alpha = this.baseAlpha;
-        }
-        update() {
-          this.x += this.vx;
-          this.y += this.vy;
+      function drawParticles(dt) {
+        if (!pCtx) return;
+        pCtx.clearRect(0, 0, vw, vh);
 
-          if (this.x < 0 || this.x > w) this.vx = -this.vx;
-          if (this.y < 0 || this.y > h) this.vy = -this.vy;
+        const stepScale = reducedMotion ? 0 : dt * 60;
+        const reactMouse = !reducedMotion && canHover && pointerActive;
 
-          // Mouse proximity reaction
-          const dx = mx - this.x;
-          const dy = my - this.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 130) {
-            const force = (130 - dist) / 130;
-            this.x -= (dx / dist) * force * 1.5;
-            this.y -= (dy / dist) * force * 1.5;
-            this.alpha = Math.min(0.9, this.baseAlpha + 0.35);
+        // Update particles (time-scaled so 30fps / 60fps / 120fps drift at identical speed)
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          if (stepScale > 0) {
+            p.x += p.vx * stepScale;
+            p.y += p.vy * stepScale;
+            if (p.x < 0) { p.x = 0; p.vx = Math.abs(p.vx); }
+            else if (p.x > vw) { p.x = vw; p.vx = -Math.abs(p.vx); }
+            if (p.y < 0) { p.y = 0; p.vy = Math.abs(p.vy); }
+            else if (p.y > vh) { p.y = vh; p.vy = -Math.abs(p.vy); }
+          }
+
+          if (reactMouse) {
+            const dx = mx - p.x;
+            const dy = my - p.y;
+            const distSq = dx * dx + dy * dy;
+            if (distSq < REPEL_DIST * REPEL_DIST && distSq > 0.0001) {
+              const dist = Math.sqrt(distSq);
+              const force = (REPEL_DIST - dist) / REPEL_DIST;
+              p.x -= (dx / dist) * force * 1.5 * stepScale;
+              p.y -= (dy / dist) * force * 1.5 * stepScale;
+              p.alpha = Math.min(0.9, p.baseAlpha + 0.35);
+            } else {
+              p.alpha = p.baseAlpha;
+            }
           } else {
-            this.alpha = this.baseAlpha;
+            p.alpha = p.baseAlpha;
           }
         }
-        draw() {
-          ctx.beginPath();
-          ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(0, 245, 255, ${this.alpha})`;
-          ctx.shadowBlur = 8;
-          ctx.shadowColor = 'rgba(0, 245, 255, 0.4)';
-          ctx.fill();
-          ctx.shadowBlur = 0;
-        }
-      }
 
-      for (let i = 0; i < PARTICLE_COUNT; i++) {
-        particles.push(new Particle());
-      }
+        // Sync palette smoothly: Monochrome Silver <-> Prismatic Cyber Cyan/Blue
+        const lr = (214 + (56 - 214) * themeMix) | 0;
+        const lg = (222 + (189 - 222) * themeMix) | 0;
+        const lb = (234 + (248 - 234) * themeMix) | 0;
+        const pr = (238 + (0 - 238) * themeMix) | 0;
+        const pg = (242 + (245 - 242) * themeMix) | 0;
+        const pb = (248 + (255 - 248) * themeMix) | 0;
 
-      function drawMesh() {
-        ctx.clearRect(0, 0, w, h);
-
-        // Draw connections
+        // Draw mesh connections
+        pCtx.lineWidth = 0.8;
         for (let i = 0; i < particles.length; i++) {
+          const pi = particles[i];
           for (let j = i + 1; j < particles.length; j++) {
-            const dx = particles[i].x - particles[j].x;
-            const dy = particles[i].y - particles[j].y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-
-            if (dist < CONNECT_DIST) {
-              const lineAlpha = (1 - dist / CONNECT_DIST) * 0.16;
-              ctx.beginPath();
-              ctx.moveTo(particles[i].x, particles[i].y);
-              ctx.lineTo(particles[j].x, particles[j].y);
-              ctx.strokeStyle = `rgba(56, 189, 248, ${lineAlpha})`;
-              ctx.lineWidth = 0.8;
-              ctx.stroke();
+            const pj = particles[j];
+            const dx = pi.x - pj.x;
+            const dy = pi.y - pj.y;
+            const distSq = dx * dx + dy * dy;
+            if (distSq < CONNECT_DIST_SQ) {
+              const dist = Math.sqrt(distSq);
+              const lineAlpha = (1 - dist / CONNECT_DIST) * (0.14 + 0.04 * themeMix);
+              pCtx.beginPath();
+              pCtx.moveTo(pi.x, pi.y);
+              pCtx.lineTo(pj.x, pj.y);
+              pCtx.strokeStyle = `rgba(${lr}, ${lg}, ${lb}, ${lineAlpha.toFixed(3)})`;
+              pCtx.stroke();
             }
           }
         }
 
-        // Draw particles
-        particles.forEach(p => {
-          p.update();
-          p.draw();
-        });
+        // Draw particle halos + cores (replaces expensive shadowBlur = 8)
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          pCtx.beginPath();
+          pCtx.arc(p.x, p.y, p.radius * 2.4, 0, TWO_PI);
+          pCtx.fillStyle = `rgba(${pr}, ${pg}, ${pb}, ${(p.alpha * 0.22).toFixed(3)})`;
+          pCtx.fill();
 
-        requestAnimationFrame(drawMesh);
+          pCtx.beginPath();
+          pCtx.arc(p.x, p.y, p.radius, 0, TWO_PI);
+          pCtx.fillStyle = `rgba(${pr}, ${pg}, ${pb}, ${p.alpha.toFixed(3)})`;
+          pCtx.fill();
+        }
       }
-      drawMesh();
+
+      // Exact analytic inverse homography matching CSS:
+      // perspective(1200px) on .stage-wrapper + translate3d(0, ty, 0) scale(sc) rotateX(ax) rotateY(ay)
+      function updateInvHomography(axDeg, ayDeg, ty, sc) {
+        const ax = axDeg * DEG2RAD;
+        const ay = ayDeg * DEG2RAD;
+        const cx = Math.cos(ax), sx = Math.sin(ax);
+        const cy = Math.cos(ay), sy = Math.sin(ay);
+        const invP = 1 / PERSPECTIVE;
+
+        const a = sc * cy;
+        const d = sc * sx * sy;
+        const e = sc * cx;
+        const f = ty;
+        const g = cx * sy * invP;
+        const h = -sx * invP;
+        const det = a * (e - f * h);
+        if (Math.abs(det) < 1e-8) {
+          invH[0] = 1; invH[1] = 0; invH[2] = 0;
+          invH[3] = 0; invH[4] = 1; invH[5] = 0;
+          invH[6] = 0; invH[7] = 0; invH[8] = 1;
+          return;
+        }
+        const invDet = 1 / det;
+        // Column-major layout for WebGL uniformMatrix3fv(..., false, invH)
+        invH[0] = (e - f * h) * invDet;
+        invH[1] = -(d - f * g) * invDet;
+        invH[2] = (d * h - e * g) * invDet;
+        invH[3] = 0;
+        invH[4] = a * invDet;
+        invH[5] = -(a * h) * invDet;
+        invH[6] = 0;
+        invH[7] = -(a * f) * invDet;
+        invH[8] = (a * e) * invDet;
+      }
+
+      // WebGL 1.0 Optical Card Backlight (Transparent premultiplied overlay over Legacy Background)
+      // ARCHIVED NOTE: Set alpha: false to re-enable opaque unified Micro-LED shader
+      const glOpts = {
+        alpha: true,
+        premultipliedAlpha: true,
+        antialias: false,
+        depth: false,
+        stencil: false,
+        powerPreference: 'high-performance'
+      };
+      let gl = null;
+      let glProg = null;
+      let glBuf = null;
+      let locs = null;
+
+      const vsSrc = `
+        attribute vec2 a_pos;
+        void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
+      `;
+
+      const fsSrc = `
+        #ifdef GL_FRAGMENT_PRECISION_HIGH
+        precision highp float;
+        #else
+        precision mediump float;
+        #endif
+
+        uniform vec2 u_pixelRes;
+        uniform float u_scale;
+        uniform float u_themeMix;
+
+        /* === ARCHIVED BACKGROUND (Micro-LED Light Field): shader uniforms ===
+        uniform vec2 u_viewport;
+        uniform float u_time;
+        uniform float u_spacing;
+        uniform vec2 u_gridOffset;
+        uniform vec2 u_pointerPos;
+        uniform float u_pointerStrength;
+        uniform float u_influenceRadius;
+        === END ARCHIVED === */
+
+        uniform vec2 u_cardCenter;
+        uniform vec2 u_half;
+        uniform float u_radius;
+        uniform float u_bleed;
+        uniform vec2 u_cardMouse;
+        uniform float u_burst;
+        uniform mat3 u_invH;
+
+        float sdRoundedBox(vec2 p, vec2 b, float r) {
+          vec2 q = abs(p) - b + vec2(r);
+          return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - r;
+        }
+
+        float hash12(vec2 p) {
+          vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+          p3 += dot(p3, p3.yzx + vec3(33.33));
+          return fract((p3.x + p3.y) * p3.z);
+        }
+
+        vec3 prismaticColor(float ang) {
+          float t = fract((ang + 3.14159265) / 6.2831853);
+          vec3 cLeft  = vec3(0.96, 0.24, 0.56);
+          vec3 cTop   = vec3(0.68, 0.36, 1.00);
+          vec3 cRight = vec3(0.22, 0.50, 1.00);
+          vec3 cBR    = vec3(0.32, 0.90, 1.00);
+          vec3 cBot   = vec3(0.36, 0.86, 0.62);
+          vec3 cBL    = vec3(1.00, 0.78, 0.82);
+
+          if (t < 0.22) return mix(cLeft, cTop, smoothstep(0.0, 0.22, t));
+          if (t < 0.48) return mix(cTop, cRight, smoothstep(0.22, 0.48, t));
+          if (t < 0.62) return mix(cRight, cBR, smoothstep(0.48, 0.62, t));
+          if (t < 0.76) return mix(cBR, cBot, smoothstep(0.62, 0.76, t));
+          if (t < 0.89) return mix(cBot, cBL, smoothstep(0.76, 0.89, t));
+          return mix(cBL, cLeft, smoothstep(0.89, 1.0, t));
+        }
+
+        void main() {
+          float invScale = 1.0 / max(u_scale, 0.25);
+          vec2 cssPos = vec2(gl_FragCoord.x, u_pixelRes.y - gl_FragCoord.y) * invScale;
+
+          // Transform screen pixel into card's tilted local plane via analytic inverse homography
+          vec2 pScreen = cssPos - u_cardCenter;
+          vec3 qLocal = u_invH * vec3(pScreen, 1.0);
+          vec2 pLocal = qLocal.xy / max(qLocal.z, 0.0001);
+
+          float d = sdRoundedBox(pLocal, u_half, u_radius);
+          float aa = 0.75 * invScale;
+
+          // Region Early-Out: Skip occluded opaque card interior & everything outside backlight bleed
+          if (d < -1.5 - aa || d >= u_bleed) {
+            gl_FragColor = vec4(0.0);
+            return;
+          }
+
+          /* === ARCHIVED BACKGROUND (Micro-LED Light Field + Volumetric Bloom + Scanlines) ===
+          vec3 bgBase = mix(vec3(5.0, 6.0, 8.0), vec3(7.0, 11.0, 20.0), u_themeMix) / 255.0;
+
+          // Layer 1: Soft volumetric ambient bloom
+          vec2 uv = cssPos / max(u_viewport, vec2(1.0));
+          vec3 col = bgBase;
+
+          vec2 d0 = (uv - vec2(0.50, 0.48)) / vec2(0.44, 0.40);
+          vec2 d1 = (uv - vec2(0.18, 0.22)) / vec2(0.36, 0.34);
+          vec2 d2 = (uv - vec2(0.82, 0.78)) / vec2(0.32, 0.32);
+
+          vec3 b0Col = mix(vec3(1.0, 1.0, 1.0) * 0.052, vec3(0.0, 0.96, 1.0) * 0.095, u_themeMix);
+          vec3 b1Col = mix(vec3(0.886, 0.91, 0.941) * 0.046, vec3(0.231, 0.51, 0.965) * 0.105, u_themeMix);
+          vec3 b2Col = mix(vec3(0.796, 0.835, 0.882) * 0.036, vec3(0.961, 0.62, 0.043) * 0.062, u_themeMix);
+
+          col += b0Col * exp(-dot(d0, d0) * 1.9);
+          col += b1Col * exp(-dot(d1, d1) * 2.1);
+          col += b2Col * exp(-dot(d2, d2) * 2.2);
+
+          // Layer 2: Soft pointer ambient halo
+          if (u_pointerStrength > 0.005) {
+            float mDist = length(cssPos - u_pointerPos);
+            float glowR = u_influenceRadius * 1.15;
+            if (mDist < glowR) {
+              float t = mDist / glowR;
+              float f0 = smoothstep(0.55, 0.0, t);
+              float f1 = smoothstep(1.0, 0.0, t) * (1.0 - f0 * 0.5);
+              vec3 h0Col = mix(vec3(0.96, 0.97, 1.0), vec3(0.0, 0.96, 1.0), u_themeMix);
+              vec3 h1Col = mix(vec3(0.725, 0.765, 0.824), vec3(0.231, 0.51, 0.965), u_themeMix);
+              float h0a = (0.095 + 0.015 * u_themeMix) * u_pointerStrength;
+              float h1a = (0.045 + 0.010 * u_themeMix) * u_pointerStrength;
+              col += h0Col * (f0 * h0a) + h1Col * (f1 * h1a);
+            }
+          }
+
+          // Layer 3: Analytic circular Micro-LED dot matrix
+          vec2 cellIdx = floor((cssPos - u_gridOffset) / u_spacing + 0.5);
+          vec2 dotCenter = u_gridOffset + cellIdx * u_spacing;
+          float distToDot = length(cssPos - dotCenter);
+
+          if (distToDot < 9.5) {
+            float c = cellIdx.x;
+            float r = cellIdx.y;
+            float waveA = sin(c * 0.18 + u_time * 0.85 + cos(r * 0.14 - u_time * 0.45) * 1.35);
+            float waveB = cos((c - r) * 0.11 - u_time * 0.6);
+            float rawAmbient = max(0.0, (waveA * 0.6 + waveB * 0.4 + 0.35) * 0.52);
+            float ambient = rawAmbient * rawAmbient;
+
+            float rawAmber = max(0.0, sin(c * 0.11 - r * 0.15 + u_time * 0.48));
+            float rawAmber2 = rawAmber * rawAmber;
+            float amber = rawAmber2 * rawAmber2 * 0.65;
+
+            float boost = 0.0;
+            if (u_pointerStrength > 0.005) {
+              float pDist = length(dotCenter - u_pointerPos);
+              if (pDist < u_influenceRadius) {
+                float prox = 1.0 - pDist / u_influenceRadius;
+                boost = prox * prox * u_pointerStrength;
+              }
+            }
+
+            vec2 halfVp = max(u_viewport * 0.5, vec2(1.0));
+            float edgeFactor = max(0.28, 1.0 - (length(dotCenter - halfVp) / length(halfVp)) * 0.58);
+            float energy = min(1.0, ambient * 0.85 + boost * 1.15);
+
+            vec3 prismDot = mix(vec3(0.231, 0.510, 0.965), vec3(0.0, 0.961, 1.0), energy);
+            if (amber > 0.08 && boost < 0.25) {
+              float aMix = amber * max(0.0, 1.0 - boost * 4.0) * 0.72;
+              prismDot = mix(prismDot, vec3(0.961, 0.620, 0.043), aMix);
+            }
+            if (boost > 0.45) {
+              float hot = (boost - 0.45) / 0.55;
+              prismDot = mix(prismDot, vec3(0.863, 0.992, 1.0), hot * 0.65);
+            }
+
+            float monoAmber = (amber > 0.08 && boost < 0.25) ? amber * 38.0 : 0.0;
+            float monoHot = boost > 0.45 ? ((boost - 0.45) / 0.55) * 42.0 : 0.0;
+            float monoVal = min(255.0, 152.0 + energy * 92.0 + monoAmber + monoHot) / 255.0;
+            vec3 monoDot = monoVal * vec3(0.96, 0.98, 1.0);
+
+            vec3 dotCol = mix(monoDot, prismDot, u_themeMix);
+            float alphaThemeScale = 0.84 + 0.16 * u_themeMix;
+            float dotAlpha = min(0.95, (0.09 + energy * 0.68 + amber * 0.18) * edgeFactor * alphaThemeScale);
+            float dotR = 1.0 + ambient * 0.65 + boost * 1.35 + amber * 0.35;
+
+            float coreMask = 1.0 - smoothstep(dotR - aa, dotR + aa, distToDot);
+            float haloMask = 0.0;
+            if (energy > 0.36 || amber > 0.32) {
+              float haloR = dotR * 2.55;
+              float hr = distToDot / max(haloR, 0.1);
+              haloMask = exp(-hr * hr * 3.0) * 0.26 * (1.0 - smoothstep(0.82, 1.0, hr));
+            }
+            float totalDot = min(1.0, coreMask + haloMask) * dotAlpha;
+            col = mix(col, dotCol, totalDot);
+          }
+
+          // Layer 4: Subtle scanlines + bottom atmospheric edge fade
+          float scan = step(2.0, mod(cssPos.y, 4.0));
+          col += mix(vec3(1.0), vec3(0.0, 0.96, 1.0), u_themeMix) * (0.011 * scan);
+          float bottomFade = smoothstep(0.60, 1.0, uv.y);
+          col = mix(col, bgBase, bottomFade);
+          === END ARCHIVED === */
+
+          // Optical SDF card backlight (3-tier falloff + 360-degree burst + matte film grain)
+          float outsideMask = smoothstep(-aa * 1.2, aa * 0.8, d);
+          float dd = max(d, 0.0);
+
+          vec2 safeHalf = max(u_half, vec2(1.0));
+          vec2 pNormSpace = pLocal / safeHalf;
+          vec2 mNormSpace = u_cardMouse / safeHalf;
+          float pLen = length(pNormSpace);
+          float mLen = length(mNormSpace);
+          vec2 dirP = pLen > 0.001 ? (pNormSpace / pLen) : vec2(0.0, 1.0);
+          vec2 dirM = mLen > 0.001 ? (mNormSpace / mLen) : vec2(0.0, 1.0);
+
+          float dirAlign = dot(dirP, dirM);
+          float centerSpread = smoothstep(0.0, 0.45, mLen);
+          float dirFocus = mix(0.55, pow(clamp(dirAlign * 0.5 + 0.5, 0.0001, 1.0), 2.35), centerSpread);
+
+          float mDist = length(pLocal - u_cardMouse);
+          float nearBoost = exp(-mDist / (max(u_half.x, u_half.y) * 1.15));
+          float directional = clamp(0.06 + dirFocus * 0.88 + nearBoost * 0.36, 0.0, 1.25);
+
+          // Click burst floods full 360-degree perimeter simultaneously
+          float energy = mix(directional, 1.18, u_burst);
+
+          // 3-tier optical LED backlight falloff (intense rim seam + color bloom + wide spill)
+          float rimCore  = exp(-dd * 0.145);
+          float midBloom = exp(-dd * 0.026) * 0.62;
+          float farSpill = pow(1.0 / (1.0 + dd * 0.011), 2.35) * 0.42;
+          float edgeFade = 1.0 - smoothstep(u_bleed * 0.52, u_bleed * 0.98, dd);
+
+          float totalLight = (rimCore * 1.12 + midBloom + farSpill) * edgeFade * outsideMask * energy;
+
+          vec3 monoCol = vec3(0.95, 0.97, 1.00);
+          float ang = pLen > 0.001 ? atan(pNormSpace.y, pNormSpace.x) : 0.0;
+          vec3 prismCol = prismaticColor(ang);
+          vec3 baseHue = mix(monoCol, prismCol, u_themeMix);
+
+          // Overexpose razor-tight edge seam toward luminous white
+          float whiteHot = clamp(rimCore * energy * (0.78 - 0.18 * u_themeMix), 0.0, 0.92);
+          vec3 bl = mix(baseHue, vec3(1.0), whiteHot) * totalLight;
+
+          // Fine photographic matte film grain inside luminous backlight
+          float gNoise = (hash12(gl_FragCoord.xy) - 0.5) * 0.048;
+          float grainMask = smoothstep(0.015, 0.18, totalLight) * edgeFade * outsideMask;
+          bl = max(bl + vec3(gNoise * grainMask), vec3(0.0));
+
+          bl = bl / (vec3(1.0) + bl * 0.28);
+          bl = clamp(bl, 0.0, 1.0);
+
+          float blAlpha = clamp(max(bl.r, max(bl.g, bl.b)), 0.0, 1.0);
+          float dither = (hash12(gl_FragCoord.xy + vec2(17.0, 31.0)) - 0.5) / 255.0;
+          bl = clamp(bl + vec3(dither * step(0.003, blAlpha)), 0.0, 1.0);
+          blAlpha = clamp(max(blAlpha, max(bl.r, max(bl.g, bl.b))), 0.0, 1.0);
+          gl_FragColor = vec4(bl, blAlpha);
+        }
+      `;
+
+      function initWebGL() {
+        glProg = null;
+        locs = null;
+        if (!gl) {
+          try {
+            gl = canvas.getContext('webgl', glOpts) || canvas.getContext('experimental-webgl', glOpts);
+          } catch (e) {
+            gl = null;
+          }
+        }
+        if (!gl) return false;
+
+        const compile = (type, src) => {
+          const sh = gl.createShader(type);
+          if (!sh) return null;
+          gl.shaderSource(sh, src);
+          gl.compileShader(sh);
+          if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+            gl.deleteShader(sh);
+            return null;
+          }
+          return sh;
+        };
+
+        const vs = compile(gl.VERTEX_SHADER, vsSrc);
+        const fs = compile(gl.FRAGMENT_SHADER, fsSrc);
+        if (!vs || !fs) {
+          gl = null;
+          return false;
+        }
+
+        const prog = gl.createProgram();
+        gl.attachShader(prog, vs);
+        gl.attachShader(prog, fs);
+        gl.linkProgram(prog);
+        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+          gl = null;
+          return false;
+        }
+
+        glProg = prog;
+        glBuf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, glBuf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+        const posLoc = gl.getAttribLocation(glProg, 'a_pos');
+        gl.enableVertexAttribArray(posLoc);
+        gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+        gl.useProgram(glProg);
+        gl.clearColor(0, 0, 0, 0);
+
+        locs = {
+          pixelRes: gl.getUniformLocation(glProg, 'u_pixelRes'),
+          scale: gl.getUniformLocation(glProg, 'u_scale'),
+          themeMix: gl.getUniformLocation(glProg, 'u_themeMix'),
+          /* === ARCHIVED BACKGROUND (Micro-LED Light Field): uniform locations ===
+          viewport: gl.getUniformLocation(glProg, 'u_viewport'),
+          time: gl.getUniformLocation(glProg, 'u_time'),
+          spacing: gl.getUniformLocation(glProg, 'u_spacing'),
+          gridOffset: gl.getUniformLocation(glProg, 'u_gridOffset'),
+          pointerPos: gl.getUniformLocation(glProg, 'u_pointerPos'),
+          pointerStrength: gl.getUniformLocation(glProg, 'u_pointerStrength'),
+          influenceRadius: gl.getUniformLocation(glProg, 'u_influenceRadius'),
+          === END ARCHIVED === */
+          cardCenter: gl.getUniformLocation(glProg, 'u_cardCenter'),
+          half: gl.getUniformLocation(glProg, 'u_half'),
+          radius: gl.getUniformLocation(glProg, 'u_radius'),
+          bleed: gl.getUniformLocation(glProg, 'u_bleed'),
+          cardMouse: gl.getUniformLocation(glProg, 'u_cardMouse'),
+          burst: gl.getUniformLocation(glProg, 'u_burst'),
+          invH: gl.getUniformLocation(glProg, 'u_invH')
+        };
+        return true;
+      }
+
+      initWebGL();
+      const ctx2d = !gl ? canvas.getContext('2d') : null;
+
+      function syncMetrics() {
+        const prevW = vw, prevH = vh;
+        vw = window.innerWidth || 1280;
+        vh = window.innerHeight || 720;
+        scale = Math.min(window.devicePixelRatio || 1, scaleCap);
+
+        canvas.width = Math.max(1, Math.floor(vw * scale));
+        canvas.height = Math.max(1, Math.floor(vh * scale));
+
+        if (particleCanvas && pCtx) {
+          particleCanvas.width = Math.max(1, Math.floor(vw * scale));
+          particleCanvas.height = Math.max(1, Math.floor(vh * scale));
+          pCtx.setTransform(scale, 0, 0, scale, 0, 0);
+          if (particles.length === 0) {
+            initParticles();
+          } else if (prevW > 0 && prevH > 0) {
+            const sx = vw / prevW, sy = vh / prevH;
+            for (let i = 0; i < particles.length; i++) {
+              particles[i].x = Math.max(0, Math.min(vw, particles[i].x * sx));
+              particles[i].y = Math.max(0, Math.min(vh, particles[i].y * sy));
+            }
+          }
+        }
+
+        /* === ARCHIVED BACKGROUND (Micro-LED Light Field): grid layout ===
+        spacing = vw < 768 ? 32 : 24;
+        const cols = Math.ceil(vw / spacing) + 1;
+        const rows = Math.ceil(vh / spacing) + 1;
+        gridOffsetX = (vw - (cols - 1) * spacing) * 0.5;
+        gridOffsetY = (vh - (rows - 1) * spacing) * 0.5;
+        === END ARCHIVED === */
+
+        // Read untransformed stage bounds (never skewed by cardRig 3D tilt or entrance)
+        const stageRect = stage && typeof stage.getBoundingClientRect === 'function'
+          ? stage.getBoundingClientRect()
+          : card.getBoundingClientRect();
+        cardW = stageRect.width || card.offsetWidth || 680;
+        cardH = stageRect.height || card.offsetHeight || 420;
+        cardCX = stageRect.width ? (stageRect.left + stageRect.width * 0.5) : (vw * 0.5);
+        cardCY = stageRect.height ? (stageRect.top + stageRect.height * 0.5) : (vh * 0.5);
+
+        const computed = typeof window.getComputedStyle === 'function' ? window.getComputedStyle(card) : null;
+        cardRadius = computed ? (parseFloat(computed.borderRadius) || 32) : 32;
+        bleed = vw < 768 ? 140 : 240;
+
+        if (gl) {
+          gl.viewport(0, 0, canvas.width, canvas.height);
+        } else if (ctx2d) {
+          ctx2d.setTransform(scale, 0, 0, scale, 0, 0);
+        }
+
+        if (reducedMotion && revealed) renderFrame(0, performance.now());
+      }
+
+      // Lightweight transparent Canvas 2D backlight fallback when WebGL is unavailable
+      function draw2DFallback(smoothBurst) {
+        if (!ctx2d) return;
+        ctx2d.clearRect(0, 0, vw, vh);
+        const halfW = cardW * 0.5;
+        const halfH = cardH * 0.5;
+
+        /* === ARCHIVED BACKGROUND (Micro-LED Light Field 2D fallback) ===
+        const bgR = (5 + 2 * themeMix) | 0;
+        const bgG = (6 + 5 * themeMix) | 0;
+        const bgB = (8 + 12 * themeMix) | 0;
+        ctx2d.fillStyle = `rgb(${bgR}, ${bgG}, ${bgB})`;
+        ctx2d.fillRect(0, 0, vw, vh);
+        const step = vw < 768 ? 44 : 36;
+        const infR = vw < 768 ? 150 : 220;
+        const rBase = (210 + (0 - 210) * themeMix) | 0;
+        const gBase = (216 + (235 - 216) * themeMix) | 0;
+        const bBase = (226 + (255 - 226) * themeMix) | 0;
+        for (let y = step * 0.5; y < vh; y += step) {
+          for (let x = step * 0.5; x < vw; x += step) {
+            if (Math.abs(x - cardCX) < halfW - 6 && Math.abs(y - cardCY) < halfH - 6) continue;
+            const wave = Math.sin(x * 0.012 + elapsed * 0.8 + Math.cos(y * 0.01 - elapsed * 0.45));
+            const amb = Math.max(0, wave * 0.5 + 0.35);
+            const a = Math.min(0.85, (0.1 + amb * 0.32) * (1 - Math.max(0, (y / vh - 0.6) / 0.4)));
+            ctx2d.fillStyle = `rgba(${rBase}, ${gBase}, ${bBase}, ${a.toFixed(2)})`;
+            ctx2d.beginPath();
+            ctx2d.arc(x, y, 1.1, 0, TWO_PI);
+            ctx2d.fill();
+          }
+        }
+        === END ARCHIVED === */
+
+        // Simplified transparent card backlight halo over legacy particle/grid background
+        const ang = Math.atan2(smoothMY, smoothMX);
+        const lobes = themeMix > 0.08
+          ? [
+            { x: cardCX - halfW, y: cardCY, c: `rgba(245, 61, 143, ${(0.48 * themeMix).toFixed(2)})` },
+            { x: cardCX, y: cardCY - halfH, c: `rgba(173, 92, 255, ${(0.48 * themeMix).toFixed(2)})` },
+            { x: cardCX + halfW, y: cardCY, c: `rgba(56, 128, 255, ${(0.48 * themeMix).toFixed(2)})` },
+            { x: cardCX, y: cardCY + halfH, c: `rgba(82, 224, 178, ${(0.45 * themeMix).toFixed(2)})` }
+          ]
+          : [{ x: cardCX + Math.cos(ang) * halfW, y: cardCY + Math.sin(ang) * halfH, c: 'rgba(245, 248, 255, 0.62)' }];
+
+        for (let i = 0; i < lobes.length; i++) {
+          const l = lobes[i];
+          const r = bleed * (1.1 + smoothBurst * 0.32);
+          const g = ctx2d.createRadialGradient(l.x, l.y, 4, l.x, l.y, r);
+          g.addColorStop(0, l.c);
+          g.addColorStop(1, 'rgba(0, 0, 0, 0)');
+          ctx2d.fillStyle = g;
+          ctx2d.fillRect(cardCX - halfW - bleed, cardCY - halfH - bleed, cardW + bleed * 2, cardH + bleed * 2);
+        }
+
+        ctx2d.save();
+        ctx2d.globalCompositeOperation = 'destination-out';
+        ctx2d.beginPath();
+        if (typeof ctx2d.roundRect === 'function') {
+          ctx2d.roundRect(cardCX - halfW, cardCY - halfH, cardW, cardH, cardRadius);
+        } else {
+          ctx2d.rect(cardCX - halfW, cardCY - halfH, cardW, cardH);
+        }
+        ctx2d.fill();
+        ctx2d.restore();
+      }
+
+      function revealLayers() {
+        if (revealed) return;
+        revealed = true;
+        requestAnimationFrame(() => {
+          canvas.classList.add('is-ready');
+          if (particleCanvas) particleCanvas.classList.add('is-ready');
+        });
+        if (stage) {
+          if (reducedMotion) {
+            stage.classList.remove('is-blurring');
+          } else {
+            setTimeout(() => stage.classList.remove('is-blurring'), 180);
+          }
+        }
+      }
+
+      function renderFrame(dt, now) {
+        // 1. Entrance animation synced with cardRig and homography
+        let entranceY = 0;
+        let entranceScale = 1;
+        if (!reducedMotion && entranceElapsed < ENTRANCE_DUR) {
+          entranceElapsed = Math.min(ENTRANCE_DUR, entranceElapsed + dt);
+          const u = entranceElapsed / ENTRANCE_DUR;
+          const ease = 1 - Math.pow(1 - u, 3);
+          entranceY = 36 * (1 - ease);
+          entranceScale = 0.94 + 0.06 * ease;
+          cardRig.style.opacity = ease.toFixed(3);
+        } else if (cardRig.style.opacity !== '1') {
+          cardRig.style.opacity = '1';
+        }
+
+        // 2. Smooth 3D tilt (synced in same frame as u_invH)
+        if (canHover && !reducedMotion && pointerActive) {
+          const dx = Math.max(-1, Math.min(1, (mx - cardCX) / (vw * 0.5)));
+          const dy = Math.max(-1, Math.min(1, (my - cardCY) / (vh * 0.5)));
+          targetTiltX = -dy * 1.4;
+          targetTiltY = dx * 1.8;
+        } else {
+          targetTiltX = 0;
+          targetTiltY = 0;
+        }
+
+        const tiltLerp = reducedMotion ? 1 : (1 - Math.exp(-dt * 10));
+        curTiltX += (targetTiltX - curTiltX) * tiltLerp;
+        curTiltY += (targetTiltY - curTiltY) * tiltLerp;
+        if (Math.abs(targetTiltX - curTiltX) < 0.001) curTiltX = targetTiltX;
+        if (Math.abs(targetTiltY - curTiltY) < 0.001) curTiltY = targetTiltY;
+
+        const txStr = entranceY.toFixed(2);
+        const scStr = entranceScale.toFixed(4);
+        const rxStr = curTiltX.toFixed(3);
+        const ryStr = curTiltY.toFixed(3);
+        const tfKey = `${txStr}|${scStr}|${rxStr}|${ryStr}`;
+        if (tfKey !== lastTransformKey) {
+          lastTransformKey = tfKey;
+          cardRig.style.transform = `translate3d(0px, ${txStr}px, 0px) scale(${scStr}) rotateX(${rxStr}deg) rotateY(${ryStr}deg)`;
+          updateInvHomography(curTiltX, curTiltY, entranceY, entranceScale);
+        }
+
+        // 3. GPU-composited cursor & card spotlight (translate3d only, zero layout reads)
+        if (canHover && cur && ring && hasPointer) {
+          const cLerp = reducedMotion ? 1 : (1 - Math.exp(-dt * 10.5));
+          rx += (mx - rx) * cLerp;
+          ry += (my - ry) * cLerp;
+          const cKey = `${mx.toFixed(1)}|${my.toFixed(1)}|${rx.toFixed(1)}|${ry.toFixed(1)}`;
+          if (cKey !== lastCursorKey) {
+            lastCursorKey = cKey;
+            cur.style.transform = `translate3d(${mx.toFixed(1)}px, ${my.toFixed(1)}px, 0)`;
+            ring.style.transform = `translate3d(${rx.toFixed(1)}px, ${ry.toFixed(1)}px, 0)`;
+          }
+        }
+
+        if (canHover && !reducedMotion && spotlight) {
+          if (pointerActive) {
+            const sx = mx - (cardCX - cardW * 0.5);
+            const sy = my - (cardCY - cardH * 0.5);
+            const sKey = `${sx.toFixed(1)}|${sy.toFixed(1)}`;
+            if (sKey !== lastSpotKey) {
+              lastSpotKey = sKey;
+              spotlight.style.transform = `translate3d(${sx.toFixed(1)}px, ${sy.toFixed(1)}px, 0)`;
+            }
+            if (!spotlight.classList.contains('is-visible')) {
+              spotlight.classList.add('is-visible');
+            }
+          } else if (spotlight.classList.contains('is-visible')) {
+            spotlight.classList.remove('is-visible');
+          }
+        }
+
+        // 4. Smooth backlight focus, themeMix & 360-degree click burst
+        if (!hasPointer && !reducedMotion) {
+          const phase = elapsed * 0.38 + 2.35;
+          targetMX = Math.cos(phase) * (cardW * 0.62);
+          targetMY = Math.sin(phase) * (cardH * 0.72);
+        } else if (hasPointer) {
+          targetMX = mx - cardCX;
+          targetMY = my - cardCY;
+        }
+
+        const follow = reducedMotion ? 1 : (1 - Math.exp(-dt * 8.5));
+        smoothMX += (targetMX - smoothMX) * follow;
+        smoothMY += (targetMY - smoothMY) * follow;
+
+        /* === ARCHIVED BACKGROUND (Micro-LED Light Field): pointer halo easing ===
+        const targetStrength = (!reducedMotion && canHover && pointerActive) ? 1 : 0;
+        const ptrLerp = reducedMotion ? 1 : (1 - Math.exp(-dt * 5.5));
+        pointerStrength += (targetStrength - pointerStrength) * ptrLerp;
+        if (Math.abs(targetStrength - pointerStrength) < 0.002) pointerStrength = targetStrength;
+
+        const posLerp = reducedMotion ? 1 : (1 - Math.exp(-dt * 7.5));
+        smoothPtrX += (mx - smoothPtrX) * posLerp;
+        smoothPtrY += (my - smoothPtrY) * posLerp;
+        === END ARCHIVED === */
+
+        const targetMix = prismaticMode ? 1 : 0;
+        if (reducedMotion) {
+          themeMix = targetMix;
+        } else if (dt > 0) {
+          themeMix += (targetMix - themeMix) * (1 - Math.exp(-dt * 4.5));
+          if (Math.abs(targetMix - themeMix) < 0.001) themeMix = targetMix;
+        }
+
+        if (burstTimer > 0 && !reducedMotion) {
+          burstTimer = Math.max(0, burstTimer - dt / 0.85);
+        }
+        const smoothBurst = burstTimer * burstTimer * (3 - 2 * burstTimer) * burstPeak;
+
+        // 5a. Render legacy interactive Cyber Particle Mesh background
+        drawParticles(dt);
+
+        // 5b. Render WebGL optical card backlight (or transparent 2D fallback)
+        if (gl && glProg && locs) {
+          gl.clear(gl.COLOR_BUFFER_BIT);
+          gl.uniform2f(locs.pixelRes, canvas.width, canvas.height);
+          gl.uniform1f(locs.scale, scale);
+          gl.uniform1f(locs.themeMix, themeMix);
+          /* === ARCHIVED BACKGROUND (Micro-LED Light Field): uniform uploads ===
+          const influenceRadius = vw < 768 ? 150 : 230;
+          gl.uniform2f(locs.viewport, vw, vh);
+          gl.uniform1f(locs.time, elapsed);
+          gl.uniform1f(locs.spacing, spacing);
+          gl.uniform2f(locs.gridOffset, gridOffsetX, gridOffsetY);
+          gl.uniform2f(locs.pointerPos, smoothPtrX, smoothPtrY);
+          gl.uniform1f(locs.pointerStrength, pointerStrength);
+          gl.uniform1f(locs.influenceRadius, influenceRadius);
+          === END ARCHIVED === */
+          gl.uniform2f(locs.cardCenter, cardCX, cardCY);
+          gl.uniform2f(locs.half, cardW * 0.5, cardH * 0.5);
+          gl.uniform1f(locs.radius, cardRadius);
+          gl.uniform1f(locs.bleed, bleed);
+          gl.uniform2f(locs.cardMouse, smoothMX, smoothMY);
+          gl.uniform1f(locs.burst, smoothBurst);
+          gl.uniformMatrix3fv(locs.invH, false, invH);
+          gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        } else {
+          draw2DFallback(smoothBurst);
+        }
+
+        lastDrawNow = now;
+        revealLayers();
+      }
+
+      function isInteractiveActive(now) {
+        if ((now - lastInputNow) < 1500) return true;
+        if (entranceElapsed < ENTRANCE_DUR) return true;
+        if (burstTimer > 0) return true;
+        if (Math.abs((prismaticMode ? 1 : 0) - themeMix) > 0.001) return true;
+        if (Math.abs(targetTiltX - curTiltX) > 0.002 || Math.abs(targetTiltY - curTiltY) > 0.002) return true;
+        if (Math.abs(mx - rx) > 0.3 || Math.abs(my - ry) > 0.3) return true;
+        if (hasPointer && (Math.abs(targetMX - smoothMX) > 0.35 || Math.abs(targetMY - smoothMY) > 0.35)) return true;
+        return false;
+      }
+
+      function tick(now) {
+        rafId = requestAnimationFrame(tick);
+        if (!lastTime) {
+          lastTime = now;
+          lastDrawNow = now;
+        }
+        const frameMs = now - lastTime;
+        const active = isInteractiveActive(now);
+
+        // Idle throttle: cap gentle particle drift & rim sweep to ~30fps when pointer & transitions are idle
+        if (!active && (now - lastDrawNow) < 33.0) {
+          return;
+        }
+
+        // One-way adaptive scale governor (1.0 -> 0.75) after 1.5s warm-up debounce, never bounces back
+        if (active && gl && !downgradedScale && (now - START_NOW) > 1500 && frameMs < 120) {
+          if (frameMs > 20.5) {
+            slowFrameCount++;
+            if (slowFrameCount >= 24) {
+              downgradedScale = true;
+              scaleCap = 0.75;
+              syncMetrics();
+            }
+          } else if (slowFrameCount > 0) {
+            slowFrameCount--;
+          }
+        }
+
+        const dt = Math.min(0.05, Math.max(0.001, (now - lastTime) * 0.001));
+        lastTime = now;
+        elapsed += dt;
+        renderFrame(dt, now);
+      }
+
+      function start() {
+        if (reducedMotion) {
+          renderFrame(0, performance.now());
+          return;
+        }
+        if (rafId === null) {
+          lastTime = 0;
+          lastDrawNow = 0;
+          rafId = requestAnimationFrame(tick);
+        }
+      }
+
+      function stop() {
+        if (rafId !== null) {
+          cancelAnimationFrame(rafId);
+          rafId = null;
+        }
+      }
+
+      if (!reducedMotion) {
+        cardRig.style.opacity = '0';
+        cardRig.style.transform = 'translate3d(0px, 36.00px, 0px) scale(0.9400) rotateX(0.000deg) rotateY(0.000deg)';
+        lastTransformKey = '36.00|0.9400|0.000|0.000';
+        updateInvHomography(0, 0, 36, 0.94);
+      }
+
+      // Single passive pointermove listener (stores coordinates only — zero DOM reads/writes)
+      if (canHover) {
+        window.addEventListener('pointermove', e => {
+          mx = e.clientX;
+          my = e.clientY;
+          hasPointer = true;
+          pointerActive = true;
+          lastInputNow = performance.now();
+        }, { passive: true });
+
+        document.addEventListener('mouseleave', () => {
+          pointerActive = false;
+          lastInputNow = performance.now();
+        });
+      }
+
+      // Monochrome White (default) <-> Click 360-degree Flare + Full-Screen Prismatic Color Sync
+      card.addEventListener('click', e => {
+        if (e.target && e.target.closest && e.target.closest('#btnBack')) return;
+        prismaticMode = !prismaticMode;
+        lastInputNow = performance.now();
+        card.classList.toggle('is-prismatic', prismaticMode);
+        card.setAttribute('data-backlight-mode', prismaticMode ? 'prismatic' : 'monochrome');
+        document.body.classList.toggle('is-prismatic', prismaticMode);
+        document.body.setAttribute('data-theme-mode', prismaticMode ? 'prismatic' : 'monochrome');
+
+        if (reducedMotion) {
+          themeMix = prismaticMode ? 1 : 0;
+          burstTimer = 0;
+          renderFrame(0, performance.now());
+        } else {
+          burstPeak = prismaticMode ? 1.0 : 0.55;
+          burstTimer = 1.0;
+        }
+      });
+
+      canvas.addEventListener('webglcontextlost', e => {
+        e.preventDefault();
+        stop();
+      });
+
+      canvas.addEventListener('webglcontextrestored', () => {
+        gl = null;
+        initWebGL();
+        syncMetrics();
+        if (!document.hidden) start();
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) stop();
+        else start();
+      });
+
+      window.addEventListener('resize', syncMetrics);
+      if (typeof ResizeObserver === 'function') {
+        new ResizeObserver(syncMetrics).observe(stage || card);
+      }
+
+      syncMetrics();
+      start();
     })();
 
     /* ── Sci-Fi Micro Sound FX (Web Audio API) ────────── */

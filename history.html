@@ -995,6 +995,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
+
       body,
       .viewport-container,
       .viewport-container::after,
@@ -1107,39 +1108,39 @@
             <h1 class="main-title" data-text="Coming Soon">Coming Soon</h1>
           </div>
 
-        <!-- Cyber HUD Scanner Bar (Pure High-Tech Segmented Matrix, No Text) -->
-        <div class="cyber-scanner-module" aria-hidden="true">
-          <span class="scanner-bracket">[</span>
-          <div class="scanner-track">
-            <span class="scanner-seg"></span>
-            <span class="scanner-seg"></span>
-            <span class="scanner-seg"></span>
-            <span class="scanner-seg"></span>
-            <span class="scanner-seg"></span>
-            <span class="scanner-seg"></span>
-            <span class="scanner-seg"></span>
-            <span class="scanner-seg"></span>
-            <span class="scanner-seg"></span>
-            <span class="scanner-seg"></span>
-            <span class="scanner-seg"></span>
-            <span class="scanner-seg"></span>
-            <span class="scanner-seg"></span>
-            <span class="scanner-seg"></span>
-            <span class="scanner-seg"></span>
-            <span class="scanner-seg"></span>
-            <span class="scanner-seg"></span>
-            <span class="scanner-seg"></span>
-            <span class="scanner-seg"></span>
-            <span class="scanner-seg"></span>
+          <!-- Cyber HUD Scanner Bar (Pure High-Tech Segmented Matrix, No Text) -->
+          <div class="cyber-scanner-module" aria-hidden="true">
+            <span class="scanner-bracket">[</span>
+            <div class="scanner-track">
+              <span class="scanner-seg"></span>
+              <span class="scanner-seg"></span>
+              <span class="scanner-seg"></span>
+              <span class="scanner-seg"></span>
+              <span class="scanner-seg"></span>
+              <span class="scanner-seg"></span>
+              <span class="scanner-seg"></span>
+              <span class="scanner-seg"></span>
+              <span class="scanner-seg"></span>
+              <span class="scanner-seg"></span>
+              <span class="scanner-seg"></span>
+              <span class="scanner-seg"></span>
+              <span class="scanner-seg"></span>
+              <span class="scanner-seg"></span>
+              <span class="scanner-seg"></span>
+              <span class="scanner-seg"></span>
+              <span class="scanner-seg"></span>
+              <span class="scanner-seg"></span>
+              <span class="scanner-seg"></span>
+              <span class="scanner-seg"></span>
+            </div>
+            <span class="scanner-bracket">]</span>
           </div>
-          <span class="scanner-bracket">]</span>
-        </div>
 
-        <!-- Return CTA -->
-        <a href="index.html" class="btn-back" id="btnBack">
-          <span class="btn-arrow">←</span>
-          <span>Quay lại Portfolio</span>
-        </a>
+          <!-- Return CTA -->
+          <a href="index.html" class="btn-back" id="btnBack">
+            <span class="btn-arrow">←</span>
+            <span>Quay lại Portfolio</span>
+          </a>
         </div>
       </div>
     </div>
@@ -1222,6 +1223,10 @@
       let mx = vw * 0.5, my = vh * 0.5;
       let rx = mx, ry = my;
       let pointerActive = false, hasPointer = false;
+      let lastPointerMoveNow = 0;
+      const POINTER_IDLE_MS = 3500;
+      const ORBIT_SPEED = 9.35;
+      let orbitPhase = 2.96;
       /* === ARCHIVED BACKGROUND (Micro-LED Light Field): pointer halo state ===
       let pointerStrength = 0;
       let smoothPtrX = mx, smoothPtrY = my;
@@ -1941,18 +1946,31 @@
         }
 
         // 4. Smooth backlight focus, themeMix & 360-degree click burst
-        if (!hasPointer && !reducedMotion) {
-          const phase = elapsed * 0.38 + 2.35;
-          targetMX = Math.cos(phase) * (cardW * 0.62);
-          targetMY = Math.sin(phase) * (cardH * 0.72);
-        } else if (hasPointer) {
+        const pointerTracking = hasPointer && pointerActive && (now - lastPointerMoveNow) < POINTER_IDLE_MS;
+        const orbitRX = cardW * 0.62;
+        const orbitRY = cardH * 0.72;
+
+        if (!pointerTracking && !reducedMotion) {
+          orbitPhase = (orbitPhase + dt * ORBIT_SPEED) % TWO_PI;
+          targetMX = Math.cos(orbitPhase) * orbitRX;
+          targetMY = Math.sin(orbitPhase) * orbitRY;
+        } else if (pointerTracking) {
           targetMX = mx - cardCX;
           targetMY = my - cardCY;
         }
 
-        const follow = reducedMotion ? 1 : (1 - Math.exp(-dt * 8.5));
+        const followRate = pointerTracking ? 8.5 : 7.0;
+        const follow = reducedMotion ? 1 : (1 - Math.exp(-dt * followRate));
         smoothMX += (targetMX - smoothMX) * follow;
         smoothMY += (targetMY - smoothMY) * follow;
+
+        if (pointerTracking) {
+          const nx = smoothMX / Math.max(orbitRX, 1);
+          const ny = smoothMY / Math.max(orbitRY, 1);
+          if (nx * nx + ny * ny > 1e-4) {
+            orbitPhase = Math.atan2(ny, nx);
+          }
+        }
 
         /* === ARCHIVED BACKGROUND (Micro-LED Light Field): pointer halo easing ===
         const targetStrength = (!reducedMotion && canHover && pointerActive) ? 1 : 0;
@@ -2020,7 +2038,8 @@
         if (Math.abs((prismaticMode ? 1 : 0) - themeMix) > 0.001) return true;
         if (Math.abs(targetTiltX - curTiltX) > 0.002 || Math.abs(targetTiltY - curTiltY) > 0.002) return true;
         if (Math.abs(mx - rx) > 0.3 || Math.abs(my - ry) > 0.3) return true;
-        if (hasPointer && (Math.abs(targetMX - smoothMX) > 0.35 || Math.abs(targetMY - smoothMY) > 0.35)) return true;
+        const pointerTracking = hasPointer && pointerActive && (now - lastPointerMoveNow) < POINTER_IDLE_MS;
+        if (pointerTracking && (Math.abs(targetMX - smoothMX) > 0.35 || Math.abs(targetMY - smoothMY) > 0.35)) return true;
         return false;
       }
 
@@ -2033,8 +2052,8 @@
         const frameMs = now - lastTime;
         const active = isInteractiveActive(now);
 
-        // Idle throttle: cap gentle particle drift & rim sweep to ~30fps when pointer & transitions are idle
-        if (!active && (now - lastDrawNow) < 33.0) {
+        // Idle throttle: cap idle orbit & particle drift to ~60fps on high-refresh displays
+        if (!active && (now - lastDrawNow) < 16.0) {
           return;
         }
 
@@ -2091,7 +2110,9 @@
           my = e.clientY;
           hasPointer = true;
           pointerActive = true;
-          lastInputNow = performance.now();
+          const now = performance.now();
+          lastPointerMoveNow = now;
+          lastInputNow = now;
         }, { passive: true });
 
         document.addEventListener('mouseleave', () => {

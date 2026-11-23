@@ -6,7 +6,7 @@ const i18nDict = {
         nav_projects: "Dự án",
         nav_terminal: "Terminal",
         nav_contact: "Liên hệ",
-        nav_history_btn: "Sắp ra mắt",
+        nav_history_btn: "Dự án cá nhân",
 
         hero_badge: "💻 &nbsp;Full Stack Developer",
 
@@ -60,7 +60,7 @@ const i18nDict = {
         cat_database: "Database",
         cat_industrial: "Industrial / 3D",
         cat_devops: "DevOps",
-        cat_ai: "AI Copilots",
+        cat_ai: "AI Agents",
 
         proj_label: "// 03 · Dự án",
         proj_title: "Dự Án Công Nghiệp & Phần Mềm",
@@ -147,7 +147,7 @@ const i18nDict = {
         nav_projects: "Projects",
         nav_terminal: "Terminal",
         nav_contact: "Contact",
-        nav_history_btn: "Coming Soon",
+        nav_history_btn: "Personal Project",
 
         hero_badge: "💻 &nbsp;Full Stack Developer",
 
@@ -201,7 +201,7 @@ const i18nDict = {
         cat_database: "Database",
         cat_industrial: "Industrial / 3D",
         cat_devops: "DevOps",
-        cat_ai: "AI Copilots",
+        cat_ai: "AI Agents",
 
         proj_label: "// 03 · Projects",
         proj_title: "Industrial & Software Projects",
@@ -288,7 +288,7 @@ const i18nDict = {
         nav_projects: "プロジェクト",
         nav_terminal: "ターミナル",
         nav_contact: "お問い合わせ",
-        nav_history_btn: "近日公開",
+        nav_history_btn: "個人プロジェクト",
 
         hero_badge: "💻 &nbsp;フルスタックエンジニア",
 
@@ -342,7 +342,7 @@ const i18nDict = {
         cat_database: "データベース",
         cat_industrial: "産業 / 3D",
         cat_devops: "DevOps",
-        cat_ai: "AIコパイロット",
+        cat_ai: "AIエージェント",
 
         proj_label: "// 03 · プロジェクト",
         proj_title: "産業＆ソフトウェアプロジェクト",
@@ -429,7 +429,7 @@ const i18nDict = {
         nav_projects: "项目",
         nav_terminal: "终端",
         nav_contact: "联系",
-        nav_history_btn: "敬请期待",
+        nav_history_btn: "个人项目",
 
         hero_badge: "💻 &nbsp;全栈工程师",
 
@@ -483,7 +483,7 @@ const i18nDict = {
         cat_database: "数据库",
         cat_industrial: "工业 / 3D",
         cat_devops: "DevOps",
-        cat_ai: "AI 编程助手",
+        cat_ai: "AI 智能体",
 
         proj_label: "// 03 · 项目",
         proj_title: "工业与软件项目",
@@ -851,7 +851,7 @@ Chuyên môn chính:
 ◉ 3D & Data : Three.js (SCADA 3D), Konva, Highcharts 3D, Recharts, ECharts
 ◉ Backend   : Java & Spring Boot, Node.js, Microservices, gRPC & Protobuf
 ◉ Database  : SQL Server (MSSQL), MySQL, PostgreSQL, Redis Pub/Sub & Cache
-◉ AI Copilot: Gemini 3.8, Claude 4.6 Sonnet
+◉ AI Agents : Gemini 3.8, Claude 4.6 Sonnet
 ◉ DevOps    : Docker, Docker Compose, Nginx, PM2, Keycloak, MinIO, Git, Linux
 ◉ Khác      : i18n đa ngôn ngữ (VI/EN/JP/CN), IndexedDB 3D Cache, bpmn-js`,
         projects: `┌──────────────────────────────────────────────────────────────┐
@@ -897,7 +897,7 @@ Core Focus:
 ◉ 3D & Data : Three.js (SCADA 3D), Konva, Highcharts 3D, Recharts, ECharts
 ◉ Backend   : Java & Spring Boot, Node.js, Microservices, gRPC & Protobuf
 ◉ Database  : SQL Server (MSSQL), MySQL, PostgreSQL, Redis Pub/Sub & Cache
-◉ AI Copilot: Gemini 3.8, Claude 4.6 Sonnet
+◉ AI Agents : Gemini 3.8, Claude 4.6 Sonnet
 ◉ DevOps    : Docker, Docker Compose, Nginx, PM2, Keycloak, MinIO, Git, Linux
 ◉ Standards : Multi-language i18n (VI/EN/JP/CN), IndexedDB 3D Cache, bpmn-js`,
         projects: `┌──────────────────────────────────────────────────────────────┐
@@ -943,7 +943,7 @@ Open for Smart Factory, Microservices & SCADA 3D collaborations.`,
 ◉ 3D & 解析 : Three.js (SCADA 3D), Konva, Highcharts 3D, Recharts, ECharts
 ◉ バック    : Java & Spring Boot, Node.js, Microservices, gRPC & Protobuf
 ◉ ＤＢ      : SQL Server (MSSQL), MySQL, PostgreSQL, Redis Pub/Sub & Cache
-◉ AI補助    : Gemini 3.8, Claude 4.6 Sonnet
+◉ AI Agents : Gemini 3.8, Claude 4.6 Sonnet
 ◉ 運用基盤  : Docker, Docker Compose, Nginx, PM2, Keycloak, MinIO, Git, Linux
 ◉ 標準対応  : 多言語i18n (VI/EN/JP/CN), IndexedDB 3Dモデルキャッシュ`,
         projects: `┌──────────────────────────────────────────────────────────────┐
@@ -989,7 +989,7 @@ Open for Smart Factory, Microservices & SCADA 3D collaborations.`,
 ◉ 3D与图表  : Three.js (SCADA 3D), Konva, Highcharts 3D, Recharts, ECharts
 ◉ 后端架构  : Java & Spring Boot, Node.js, Microservices, gRPC & Protobuf
 ◉ 数据库    : SQL Server (MSSQL), MySQL, PostgreSQL, Redis Pub/Sub & Cache
-◉ AI 助手   : Gemini 3.8, Claude 4.6 Sonnet
+◉ AI 智能体 : Gemini 3.8, Claude 4.6 Sonnet
 ◉ 运维部署  : Docker, Docker Compose, Nginx, PM2, Keycloak, MinIO, Git, Linux
 ◉ 规范支持  : 多语言国际化 (VI/EN/JP/CN), IndexedDB 3D 缓存, bpmn-js`,
         projects: `┌──────────────────────────────────────────────────────────────┐
